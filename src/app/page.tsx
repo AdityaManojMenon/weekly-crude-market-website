@@ -3,10 +3,12 @@ import SignalBadge from "@/components/SignalBadge";
 import SectionHeader from "@/components/SectionHeader";
 import StatCard from "@/components/StatCard";
 import SpreadMiniChart from "@/components/SpreadMiniChart";
+import RiskDashboardComponent from "@/components/RiskDashboard";
+import CatalystCalendar from "@/components/CatalystCalendar";
 import Link from "next/link";
 import {
   FileText, LayoutGrid, Database, Zap, TrendingUp,
-  Target, Globe, Layers, Factory, AlertTriangle,
+  Target, Globe, Layers, Factory, AlertTriangle, ShieldAlert, CalendarClock,
 } from "lucide-react";
 
 export default function Home() {
@@ -31,7 +33,7 @@ export default function Home() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-10 fade-in">
 
-      {/* ── Header Band ─────────────────────────────────────────── */}
+      {/* Header Band */}
       <div
         className="rounded-xl p-6 mb-8 flex flex-col md:flex-row md:items-start md:justify-between gap-5"
         style={{ background: "var(--card)", border: "1px solid var(--border)" }}
@@ -91,7 +93,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Divergence Alert ────────────────────────────────────── */}
+      {/* Divergence Alert */}
       {brief.divergenceFlag && (
         <div
           className="rounded-xl p-5 mb-8 flex items-start gap-4"
@@ -107,7 +109,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* ── Executive Summary ───────────────────────────────────── */}
+      {/* Executive Summary */}
       <div className="mb-8">
         <SectionHeader title="Executive Summary" accent icon={FileText} />
         <div
@@ -120,7 +122,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Key Metrics ─────────────────────────────────────────── */}
+      {/* Key Metrics */}
       <div className="mb-8">
         <SectionHeader title="Key Metrics" icon={LayoutGrid} />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -155,7 +157,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── [Inventory + Spread Chart] | [Signals] ──────────────── */}
+      {/* Inventory + Spread Chart | Signals */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 
         {/* Left: Inventory + Spread */}
@@ -264,13 +266,13 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Trade Ideas + Scenarios ─────────────────────────────── */}
+      {/* Trade Ideas + Scenarios */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 
         {/* Trade Ideas */}
-        <div>
+        <div className="flex flex-col h-full">
           <SectionHeader title="Trade Ideas" accent icon={Target} />
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 flex-1">
             {brief.tradeIdeas.map((idea, i) => {
               const cs = convictionStyle(idea.conviction);
               return (
@@ -299,6 +301,30 @@ export default function Home() {
                 </div>
               );
             })}
+
+            {/* Key Price Levels */}
+            <div className="rounded-xl p-5 mt-auto" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <p className="text-xs font-mono uppercase tracking-widest font-bold mb-4"
+                style={{ color: "var(--accent)", letterSpacing: "0.1em" }}>
+                Key Price Levels
+              </p>
+              <div className="space-y-2">
+                {brief.keyLevels.map((lvl, i) => {
+                  const typeColor = lvl.type === "resistance" ? "#dc2626" : lvl.type === "support" ? "#16a34a" : "#d97706";
+                  return (
+                    <div key={i} className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: typeColor }} />
+                        <span className="text-xs truncate" style={{ color: "var(--muted)" }}>{lvl.label}</span>
+                      </div>
+                      <span className="text-xs font-mono font-bold flex-shrink-0" style={{ color: typeColor }}>
+                        {lvl.price}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -338,7 +364,19 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Geopolitical + Outlook ──────────────────────────────── */}
+      {/* Risk Dashboard */}
+      <div className="mb-8">
+        <SectionHeader title="Risk Dashboard" icon={ShieldAlert} />
+        <RiskDashboardComponent data={brief.riskDashboard} />
+      </div>
+
+      {/* Upcoming Market Catalysts */}
+      <div className="mb-8">
+        <SectionHeader title="Upcoming Market Catalysts" icon={CalendarClock} />
+        <CatalystCalendar events={brief.catalysts} />
+      </div>
+
+      {/* Geopolitical + Outlook */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <div>
           <SectionHeader title="Geopolitical Context" icon={Globe} />
@@ -354,7 +392,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Footer ──────────────────────────────────────────────── */}
+      {/* Footer */}
       <div className="flex items-center justify-between pt-5" style={{ borderTop: "1px solid var(--border)" }}>
         <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>
           Published {brief.publishedDate} · EIA data {brief.eiaReleaseDate}

@@ -72,6 +72,27 @@ export interface CallRecord {
   notes: string;
 }
 
+export type CatalystType = "eia" | "opec" | "macro" | "geo" | "fed";
+
+export interface CatalystEvent {
+  date: string;
+  label: string;
+  detail: string;
+  type: CatalystType;
+  isLive?: boolean;
+}
+
+export interface RiskDashboard {
+  upsideRisks: string[];
+  downsideRisks: string[];
+  // 1 = full bullish, 5 = full bearish
+  riskScore: 1 | 2 | 3 | 4 | 5;
+  riskLabel: string;
+  volatility: "HIGH" | "MEDIUM" | "LOW";
+  conviction: "HIGH" | "MEDIUM" | "LOW";
+  dominantDriver: string;
+}
+
 export interface WeeklyBrief {
   id: string;
   weekEnding: string;
@@ -90,7 +111,10 @@ export interface WeeklyBrief {
   divergenceFlag: boolean;
   divergenceNote?: string;
   tradeIdeas: TradeIdea[];
+  keyLevels: { price: string; label: string; type: "resistance" | "support" | "pivot" }[];
   scenarios: Scenario[];
+  catalysts: CatalystEvent[];
+  riskDashboard: RiskDashboard;
   geopoliticalContext: string;
   outlook: string;
   wtiPriceAtPublish: number;
@@ -223,19 +247,25 @@ export const briefs: WeeklyBrief[] = [
       {
         structure: "Fade Prompt Tightness / Short Strength Rallies",
         rationale: "Curve remains backwardated, but the rapid collapse from ~$14 to ~$8 suggests prior scarcity pricing is being unwound. Strong structure remains, but momentum has shifted lower. Geopolitics — not fundamentals — are setting price direction right now.",
-        entry: "Sell rallies into $63.50–65.00",
+        entry: "$63.50–65.00",
         target: "$60.00–61.00",
-        stop: "$66.50 (re-tightening signal)",
+        stop: "$66.50",
         conviction: "LOW",
       },
       {
         structure: "Long CL1–CL2 Spread on Stabilization Only",
         rationale: "Backwardation remains elevated (+$7.94) but has compressed sharply from the $14.72 peak. Do not chase current levels. Wait for stabilization and confirmation before re-entering curve tightness.",
-        entry: "Only if spread holds +$7.50–$8.00",
+        entry: "+$7.50–$8.00",
         target: "+$9.00 to +$10.00",
         stop: "Break below +$6.00",
         conviction: "MEDIUM",
       },
+    ],
+    keyLevels: [
+      { price: "$66.50", label: "Stop / Re-tightening Signal", type: "resistance" },
+      { price: "$63.50–65.00", label: "Sell Rally Zone", type: "resistance" },
+      { price: "$60.00–61.00", label: "Target / Bull Support", type: "support" },
+      { price: "$58.00", label: "Scenario Bear Target", type: "support" },
     ],
     scenarios: [
       {
@@ -263,7 +293,33 @@ export const briefs: WeeklyBrief[] = [
     geopoliticalContext:
       "The dominant catalyst this week was Middle East de-escalation, which reduced fears of a Strait of Hormuz disruption and triggered a sharp unwind in crude’s geopolitical risk premium. That repricing compressed the prompt spread and pressured front-month WTI despite still-supportive physical indicators. Attention now shifts to OPEC+’s April 24 meeting, where any signal of renewed supply discipline could help re-establish a downside floor near the mid-$60s.",
     outlook:
-      "Directional bias: CAUTIOUSLY BEARISH. The physical market remains supportive, but price is currently being driven by the unwind of geopolitical risk premium rather than outright supply-demand tightening. Backwardation near +$7.94 and firm crack spreads around $41 suggest conditions are still constructive beneath the surface, yet the sharp compression from crisis highs signals momentum has turned lower. Favor patience and tactical positioning until direction becomes clearer.",
+      "Directional bias: CAUTIOUSLY BEARISH. The physical market remains supportive, but price is currently being driven by the unwind of geopolitical risk premium rather than outright supply-demand tightening. Backwardation near +$7.94 and firm crack spreads around $41 suggest conditions are still constructive beneath the surface, yet the sharp compression from crisis highs signals momentum has turned lower. Patience and tactical positioning is key in this transition regime.",
+    catalysts: [
+      { date: "Apr 16", label: "EIA WPSR", detail: "Weekly crude & product inventory release", type: "eia" },
+      { date: "Apr 24", label: "OPEC+ Meeting", detail: "Production policy decision — key for supply outlook", type: "opec" },
+      { date: "May 2", label: "Non-Farm Payrolls", detail: "Demand proxy — strong print supportive for crude", type: "macro" },
+      { date: "Live", label: "Middle East Headlines", detail: "Ceasefire durability & Hormuz risk premium", type: "geo", isLive: true },
+      { date: "May 7", label: "Fed Meeting", detail: "Rate decision — DXY sensitivity & demand outlook", type: "fed" },
+    ],
+    riskDashboard: {
+      upsideRisks: [
+        "Hormuz disruption / shipping lane closure",
+        "Surprise crude draw next EIA print",
+        "OPEC+ unscheduled production cut",
+        "Strong gasoline demand continuation",
+      ],
+      downsideRisks: [
+        "Ceasefire holds, risk premium fully unwinds",
+        "CL1–CL2 spread breaks below +$6.00",
+        "Crack spreads weaken below $38/bbl",
+        "Macro slowdown signals emerge",
+      ],
+      riskScore: 4,
+      riskLabel: "Balanced → Bearish",
+      volatility: "HIGH",
+      conviction: "LOW",
+      dominantDriver: "Geopolitics",
+    },
     wtiPriceAtPublish: 61.99,
     wtiWeeklyChange: -1.82,
   },
@@ -366,6 +422,11 @@ export const briefs: WeeklyBrief[] = [
         conviction: "HIGH",
       },
     ],
+    keyLevels: [
+      { price: "$75.00", label: "Resistance / Near Target", type: "resistance" },
+      { price: "$70.00", label: "Support / Add Level", type: "support" },
+      { price: "$68.00–69.00", label: "Key Support Zone", type: "support" },
+    ],
     scenarios: [
       {
         title: "Continued Demand Weakness",
@@ -393,6 +454,31 @@ export const briefs: WeeklyBrief[] = [
       "OPEC+ meeting on Apr 24 increasingly in focus. Reports of internal disagreement on production targets. Libya restart adding 200kbbl/d. No acute supply disruption risk.",
     outlook:
       "Directional bias: BEARISH. Sell rallies into $72.50. Watching crack spreads closely — if 3-2-1 cracks fall below $22, increase conviction on downside. Next support: $69.20.",
+    catalysts: [
+      { date: "Apr 9", label: "EIA WPSR", detail: "Crude build +2.7 MMbbl — confirmed bearish trajectory", type: "eia" },
+      { date: "Apr 14", label: "OPEC Monthly Report", detail: "Demand & supply revisions", type: "opec" },
+      { date: "Apr 17", label: "EIA WPSR", detail: "Next weekly inventory data point", type: "eia" },
+      { date: "Live", label: "OPEC+ Compliance", detail: "Adherence to quota vs. cheating signals", type: "opec", isLive: true },
+      { date: "May 2", label: "Non-Farm Payrolls", detail: "Macro demand signal", type: "macro" },
+    ],
+    riskDashboard: {
+      upsideRisks: [
+        "OPEC+ surprise cut announcement",
+        "Gasoline demand rebound",
+        "Refinery outage tightening supply",
+      ],
+      downsideRisks: [
+        "Broad-based inventory builds continue",
+        "Contango deepens further",
+        "Macro risk-off / DXY strength",
+        "Demand destruction signals",
+      ],
+      riskScore: 4,
+      riskLabel: "Bearish",
+      volatility: "MEDIUM",
+      conviction: "HIGH",
+      dominantDriver: "Inventory / Demand",
+    },
     wtiPriceAtPublish: 72.10,
     wtiWeeklyChange: -1.15,
   },
@@ -495,6 +581,12 @@ export const briefs: WeeklyBrief[] = [
         conviction: "HIGH",
       },
     ],
+    keyLevels: [
+      { price: "$77.00", label: "Bull Scenario Target", type: "resistance" },
+      { price: "$75.00", label: "Breakout / Add Level", type: "resistance" },
+      { price: "$72.00", label: "Stop Level", type: "support" },
+      { price: "$70.00", label: "Bear Scenario Target", type: "support" },
+    ],
     scenarios: [
       {
         title: "Demand Momentum Continues",
@@ -522,6 +614,30 @@ export const briefs: WeeklyBrief[] = [
       "Saudi Arabia extended voluntary cuts through Q2. OPEC+ cohesion improving. No major supply disruption but Red Sea tensions adding ~$1.50/bbl risk premium.",
     outlook:
       "Directional bias: BULLISH. All systems go. Add on any dip to $72.50. Target $76 over 2 weeks. This is a high-conviction environment — physical market, curve, and cracks all pointing the same direction.",
+    catalysts: [
+      { date: "Mar 26", label: "EIA WPSR", detail: "Confirmed strong gasoline draw — bullish signal", type: "eia" },
+      { date: "Apr 2", label: "OPEC+ Output Review", detail: "Compliance check — above 85%", type: "opec" },
+      { date: "Apr 4", label: "Non-Farm Payrolls", detail: "Strong print — demand momentum intact", type: "macro" },
+      { date: "Live", label: "Red Sea Situation", detail: "Shipping disruptions keeping risk premium elevated", type: "geo", isLive: true },
+    ],
+    riskDashboard: {
+      upsideRisks: [
+        "Demand momentum sustains draws",
+        "OPEC+ compliance holds above 85%",
+        "Red Sea shipping tensions escalate",
+        "US shale discipline maintains",
+      ],
+      downsideRisks: [
+        "Production response to higher prices",
+        "Macro risk-off / equity selloff",
+        "Backwardation compression if draws pause",
+      ],
+      riskScore: 2,
+      riskLabel: "Bullish",
+      volatility: "LOW",
+      conviction: "HIGH",
+      dominantDriver: "Physical Demand",
+    },
     wtiPriceAtPublish: 73.25,
     wtiWeeklyChange: 2.31,
   },

@@ -2,11 +2,13 @@ import { briefs, getBiasLabel, getBiasColor, getRegimeLabel } from "@/data/brief
 import SignalBadge from "@/components/SignalBadge";
 import SectionHeader from "@/components/SectionHeader";
 import SpreadMiniChart from "@/components/SpreadMiniChart";
+import RiskDashboardComponent from "@/components/RiskDashboard";
+import CatalystCalendar from "@/components/CatalystCalendar";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   FileText, Database, Zap, TrendingUp,
-  Target, Globe, Layers, Factory, AlertTriangle,
+  Target, Globe, Layers, Factory, AlertTriangle, ShieldAlert, CalendarClock,
 } from "lucide-react";
 
 interface Props {
@@ -207,9 +209,9 @@ export default async function BriefPage({ params }: Props) {
 
       {/* Trade Ideas + Scenarios */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div>
+        <div className="flex flex-col h-full">
           <SectionHeader title="Trade Ideas" accent icon={Target} />
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 flex-1">
             {brief.tradeIdeas.map((idea, i) => {
               const cs = convictionStyle(idea.conviction);
               return (
@@ -234,6 +236,27 @@ export default async function BriefPage({ params }: Props) {
                 </div>
               );
             })}
+
+            {/* Key Price Levels */}
+            <div className="rounded-xl p-5 mt-auto" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <p className="text-xs font-mono uppercase tracking-widest font-bold mb-4" style={{ color: "var(--accent)", letterSpacing: "0.1em" }}>
+                Key Price Levels
+              </p>
+              <div className="space-y-2">
+                {brief.keyLevels.map((lvl, i) => {
+                  const typeColor = lvl.type === "resistance" ? "#dc2626" : lvl.type === "support" ? "#16a34a" : "#d97706";
+                  return (
+                    <div key={i} className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: typeColor }} />
+                        <span className="text-xs truncate" style={{ color: "var(--muted)" }}>{lvl.label}</span>
+                      </div>
+                      <span className="text-xs font-mono font-bold flex-shrink-0" style={{ color: typeColor }}>{lvl.price}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -262,6 +285,18 @@ export default async function BriefPage({ params }: Props) {
             })}
           </div>
         </div>
+      </div>
+
+      {/* Risk Dashboard */}
+      <div className="mb-8">
+        <SectionHeader title="Risk Dashboard" icon={ShieldAlert} />
+        <RiskDashboardComponent data={brief.riskDashboard} />
+      </div>
+
+      {/* Upcoming Market Catalysts */}
+      <div className="mb-8">
+        <SectionHeader title="Upcoming Market Catalysts" icon={CalendarClock} />
+        <CatalystCalendar events={brief.catalysts} />
       </div>
 
       {/* Geopolitical + Outlook */}
