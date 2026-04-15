@@ -123,7 +123,7 @@ export default function Home() {
           <StatCard
             label="CL1–CL2 Spread"
             value={`$${brief.curveStructure.spread.toFixed(2)}`}
-            sub={`${brief.curveStructure.structure} · ${fmtChange(brief.curveStructure.spreadChange)}¢ WoW`}
+            sub={`${brief.curveStructure.structure === "BACKWARDATION" && brief.curveStructure.spread >= 5 ? "Strong Backwardation" : brief.curveStructure.structure} · ${fmtChange(brief.curveStructure.spreadChange)} WoW`}
             direction={brief.curveStructure.structure === "BACKWARDATION" ? "bull" : "bear"}
           />
           <StatCard

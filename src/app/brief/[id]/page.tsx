@@ -139,7 +139,7 @@ export default async function BriefPage({ params }: Props) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
             { label: "Crude Δ", value: `${fmtChange(brief.inventory.crude.actual)} MMbbl`, sub: `Surprise: ${fmtChange(brief.inventory.crude.surprise)}`, dir: brief.inventory.crude.actual < 0 ? "bull" : "bear" },
-            { label: "CL1–CL2", value: `$${brief.curveStructure.spread.toFixed(2)}`, sub: brief.curveStructure.structure, dir: brief.curveStructure.structure === "BACKWARDATION" ? "bull" : "bear" },
+            { label: "CL1–CL2", value: `$${brief.curveStructure.spread.toFixed(2)}`, sub: brief.curveStructure.structure === "BACKWARDATION" && brief.curveStructure.spread >= 5 ? "Strong Backwardation" : brief.curveStructure.structure, dir: brief.curveStructure.structure === "BACKWARDATION" ? "bull" : "bear" },
             { label: "3-2-1 Crack", value: `$${brief.crackSpreads.crackSpread321}/bbl`, sub: `${fmtChange(brief.crackSpreads.crackSpreadChange)} WoW`, dir: brief.crackSpreads.crackSpreadChange > 0 ? "bull" : "bear" },
             { label: "Ref. Util.", value: `${brief.production.refinerUtilization}%`, sub: `${brief.production.domesticProduction} MMbbl/d prod`, dir: "accent" },
           ].map(({ label, value, sub, dir }) => (

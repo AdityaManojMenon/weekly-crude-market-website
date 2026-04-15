@@ -25,11 +25,15 @@ function CustomDot(props: any) {
   if (payload.isPeak) {
     return (
       <g>
-        <circle cx={cx} cy={cy} r={5} fill="#fbbf24" stroke="#0a0a0a" strokeWidth={2} />
-        <text x={cx} y={cy - 12} textAnchor="middle" fill="#fbbf24" fontSize={9} fontFamily="monospace" fontWeight="bold">
-          PEAK
+        {/* drop line from label box to dot */}
+        <line x1={cx} y1={cy - 32} x2={cx} y2={cy - 6} stroke="#fbbf24" strokeWidth={1} strokeDasharray="2 2" opacity={0.6} />
+        {/* label box */}
+        <rect x={cx - 44} y={cy - 48} width={88} height={16} rx={2} fill="#1a1200" stroke="#fbbf24" strokeWidth={1} opacity={0.9} />
+        <text x={cx} y={cy - 37} textAnchor="middle" fill="#fbbf24" fontSize={8} fontFamily="monospace" fontWeight="bold">
+          SUPPLY CRUNCH PEAK
         </text>
-        <text x={cx} y={cy - 3} textAnchor="middle" fill="#fbbf24" fontSize={9} fontFamily="monospace" dy={-8}>
+        <circle cx={cx} cy={cy} r={5} fill="#fbbf24" stroke="#0a0a0a" strokeWidth={2} />
+        <text x={cx + 8} y={cy + 4} textAnchor="start" fill="#fbbf24" fontSize={9} fontFamily="monospace" fontWeight="bold">
           {payload.value.toFixed(2)}
         </text>
       </g>
@@ -39,10 +43,10 @@ function CustomDot(props: any) {
     return (
       <g>
         <circle cx={cx} cy={cy} r={5} fill="#d4922a" stroke="#0a0a0a" strokeWidth={2} />
-        <text x={cx} y={cy - 12} textAnchor="middle" fill="#d4922a" fontSize={9} fontFamily="monospace" fontWeight="bold">
+        <text x={cx - 6} y={cy - 10} textAnchor="middle" fill="#d4922a" fontSize={8} fontFamily="monospace" fontWeight="bold">
           NOW
         </text>
-        <text x={cx} y={cy - 3} textAnchor="middle" fill="#d4922a" fontSize={9} fontFamily="monospace" dy={-8}>
+        <text x={cx - 6} y={cy + 18} textAnchor="middle" fill="#d4922a" fontSize={9} fontFamily="monospace">
           {payload.value.toFixed(2)}
         </text>
       </g>
@@ -80,14 +84,19 @@ function CustomTooltip({ active, payload }: any) {
 export default function SpreadMiniChart({ data, currentSpread, structure, compact = false }: Props) {
   const isBackwardation = structure === "BACKWARDATION";
 
-  // Find peak (most extreme value — most negative for backwardation, most positive for contango)
-  const peakIdx = isBackwardation
-    ? data.reduce((min, d, i, arr) => (d.value < arr[min].value ? i : min), 0)
-    : data.reduce((max, d, i, arr) => (d.value > arr[max].value ? i : max), 0);
+  // Peak = most extreme value by absolute magnitude
+  const peakIdx = data.reduce(
+    (extreme, d, i, arr) => (Math.abs(d.value) > Math.abs(arr[extreme].value) ? i : extreme),
+    0
+  );
 
   const peakValue = data[peakIdx].value;
-  const dropFromPeak = currentSpread - peakValue;
-  const dropPct = peakValue !== 0 ? ((dropFromPeak / Math.abs(peakValue)) * 100).toFixed(1) : "0";
+  // "Drop from peak" in terms of absolute compression: positive = we've pulled back from extreme
+  const compressedFromPeak = Math.abs(peakValue) - Math.abs(currentSpread);
+  const compressedPct = peakValue !== 0 ? ((compressedFromPeak / Math.abs(peakValue)) * 100).toFixed(1) : "0";
+  const isCompressing = compressedFromPeak > 0.01;
+  const deltaDisplay = (currentSpread - peakValue).toFixed(2);
+  const deltaSigned = currentSpread - peakValue >= 0 ? `+${deltaDisplay}` : deltaDisplay;
 
   const annotated = data.map((d, i) => ({
     ...d,
@@ -103,21 +112,15 @@ export default function SpreadMiniChart({ data, currentSpread, structure, compac
 
   const lineColor = isBackwardation ? "#22c55e" : "#ef4444";
 
-  // Narrative insight
-  const peakIsBackAndPullback = isBackwardation && dropFromPeak > 0;
-  const peaked = isBackwardation
-    ? `Spread peaked at ${peakValue.toFixed(2)} on ${data[peakIdx].day}`
-    : `Spread peaked at +${peakValue.toFixed(2)} on ${data[peakIdx].day}`;
-
   let narrative = "";
-  if (isBackwardation && peakIsBackAndPullback) {
-    narrative = `Came off blow-off top — backwardation compressing ${Math.abs(Number(dropPct))}% from peak. Physical tightness easing but structure intact.`;
-  } else if (isBackwardation && !peakIsBackAndPullback) {
-    narrative = `Backwardation deepening — spread at ${currentSpread.toFixed(2)}, front-month scarcity premium expanding.`;
-  } else if (!isBackwardation && dropFromPeak < 0) {
+  if (isBackwardation && isCompressing) {
+    narrative = `Came off blow-off top — backwardation compressing ${Math.abs(Number(compressedPct))}% from peak. Physical tightness easing but structure intact.`;
+  } else if (isBackwardation && !isCompressing) {
+    narrative = `Backwardation deepening — spread at +${currentSpread.toFixed(2)}, front-month scarcity premium expanding.`;
+  } else if (!isBackwardation && !isCompressing) {
     narrative = `Contango widening — curve structure deteriorating, market pricing near-term supply surplus.`;
   } else {
-    narrative = `Contango structure — spread at +${currentSpread.toFixed(2)}, market pricing forward supply overhang.`;
+    narrative = `Contango compressing — spread at ${currentSpread.toFixed(2)}, market transitioning toward balance.`;
   }
 
   if (compact) {
@@ -143,9 +146,9 @@ export default function SpreadMiniChart({ data, currentSpread, structure, compac
         </div>
 
         {/* Sparkline */}
-        <div style={{ height: "148px" }}>
+        <div style={{ height: "190px" }}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={annotated} margin={{ top: 16, right: 8, left: 0, bottom: 2 }}>
+            <LineChart data={annotated} margin={{ top: 58, right: 8, left: 0, bottom: 2 }}>
               <XAxis
                 dataKey="day"
                 tick={{ fill: "#3a3a3a", fontSize: 8, fontFamily: "monospace" }}
@@ -172,9 +175,9 @@ export default function SpreadMiniChart({ data, currentSpread, structure, compac
         {/* Mini stats row */}
         <div className="grid grid-cols-3 gap-1 pt-1" style={{ borderTop: "1px solid var(--border-subtle)" }}>
           {[
-            { label: "PEAK", value: peakValue.toFixed(2), sub: data[peakIdx].day, color: "#fbbf24" },
+            { label: "PEAK", value: `${peakValue >= 0 ? "+" : ""}${peakValue.toFixed(2)}`, sub: data[peakIdx].day, color: "#fbbf24" },
             { label: "NOW", value: `${currentSpread >= 0 ? "+" : ""}${currentSpread.toFixed(2)}`, sub: data[data.length - 1].day, color: lineColor },
-            { label: "Δ PEAK", value: `${dropFromPeak >= 0 ? "+" : ""}${dropFromPeak.toFixed(2)}`, sub: `${Math.abs(Number(dropPct))}% mv`, color: peakIsBackAndPullback || (!isBackwardation && dropFromPeak < 0) ? "#ef4444" : "#22c55e" },
+            { label: "Δ PEAK", value: deltaSigned, sub: `${Math.abs(Number(compressedPct))}% mv`, color: isCompressing ? "#ef4444" : "#22c55e" },
           ].map(({ label, value, sub, color }) => (
             <div key={label}>
               <div style={{ color: "var(--muted)", fontSize: "9px", fontFamily: "monospace", letterSpacing: "0.06em" }}>{label}</div>
@@ -213,7 +216,7 @@ export default function SpreadMiniChart({ data, currentSpread, structure, compac
           <div>
             <div className="text-xs font-mono mb-0.5" style={{ color: "var(--muted)", fontSize: "9px", letterSpacing: "0.08em" }}>PEAK</div>
             <div className="text-sm font-mono font-semibold tabular-nums" style={{ color: "#fbbf24" }}>
-              {peakValue.toFixed(2)}
+              {peakValue >= 0 ? "+" : ""}{peakValue.toFixed(2)}
             </div>
             <div className="text-xs font-mono" style={{ color: "var(--muted)", fontSize: "9px" }}>{data[peakIdx].day}</div>
           </div>
@@ -233,12 +236,12 @@ export default function SpreadMiniChart({ data, currentSpread, structure, compac
             </div>
             <div
               className="text-sm font-mono font-semibold tabular-nums"
-              style={{ color: peakIsBackAndPullback || (!isBackwardation && dropFromPeak < 0) ? "#ef4444" : "#22c55e" }}
+              style={{ color: isCompressing ? "#ef4444" : "#22c55e" }}
             >
-              {dropFromPeak >= 0 ? "+" : ""}{dropFromPeak.toFixed(2)}
+              {deltaSigned}
             </div>
             <div className="text-xs font-mono" style={{ color: "var(--muted)", fontSize: "9px" }}>
-              {Math.abs(Number(dropPct))}% move
+              {Math.abs(Number(compressedPct))}% move
             </div>
           </div>
         </div>
@@ -247,7 +250,7 @@ export default function SpreadMiniChart({ data, currentSpread, structure, compac
       {/* Right: sparkline */}
       <div className="flex-1 min-w-0" style={{ height: "110px" }}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={annotated} margin={{ top: 18, right: 12, left: 0, bottom: 4 }}>
+            <LineChart data={annotated} margin={{ top: 58, right: 12, left: 0, bottom: 4 }}>
             <XAxis
               dataKey="day"
               tick={{ fill: "#3a3a3a", fontSize: 9, fontFamily: "monospace" }}
