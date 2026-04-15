@@ -126,7 +126,7 @@ export default function SpreadMiniChart({ data, currentSpread, structure, compac
   if (compact) {
     return (
       <div
-        className="rounded-lg p-3 flex flex-col gap-2 h-full"
+        className="rounded-lg p-3 flex flex-col gap-2 h-full min-h-0"
         style={{ background: "var(--card)", border: "1px solid var(--border)" }}
       >
         {/* Compact header */}
@@ -145,8 +145,8 @@ export default function SpreadMiniChart({ data, currentSpread, structure, compac
           </span>
         </div>
 
-        {/* Sparkline */}
-        <div style={{ height: "190px" }}>
+        {/* Sparkline — flex-1 fills remaining vertical space */}
+        <div className="flex-1 min-h-0">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={annotated} margin={{ top: 58, right: 8, left: 0, bottom: 2 }}>
               <XAxis
