@@ -393,14 +393,24 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-5" style={{ borderTop: "1px solid var(--border)" }}>
+      <div className="pt-5 flex items-center justify-between" style={{ borderTop: "1px solid var(--border)" }}>
         <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>
-          Published {brief.publishedDate} · EIA data {brief.eiaReleaseDate}
+          Systematic + Fundamental Energy Intelligence&nbsp;&nbsp;·&nbsp;&nbsp;Next Release: Apr 16 (EIA WPSR)
         </span>
-        <Link href="/archive" className="text-xs font-mono tracking-wider hover:text-white transition-colors"
-          style={{ color: "var(--accent)" }}>
-          VIEW ALL BRIEFS →
-        </Link>
+        <div className="flex items-center gap-4">
+          {[
+            { label: "Archive", href: "/archive" },
+            { label: "Performance", href: "/performance" },
+            { label: "Methodology", href: "/methodology" },
+            { label: "Contact", href: "/contact" },
+          ].map(({ label, href }) => (
+            <Link key={href} href={href}
+              className="text-xs font-mono tracking-wider hover:text-white transition-colors"
+              style={{ color: "var(--accent)" }}>
+              {label}
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

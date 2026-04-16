@@ -1,16 +1,16 @@
 "use client";
 
 const tickers = [
-  { label: "WTI CRUDE", value: "71.42", change: "-0.68", pct: "-0.94%" },
-  { label: "BRENT", value: "75.54", change: "-0.72", pct: "-0.94%" },
-  { label: "NAT GAS", value: "2.14", change: "+0.03", pct: "+1.42%" },
-  { label: "RBOB", value: "2.218", change: "-0.008", pct: "-0.36%" },
-  { label: "HEATING OIL", value: "2.341", change: "-0.012", pct: "-0.51%" },
-  { label: "CL SPREAD", value: "-0.76", change: "-0.18", pct: "BKWDN" },
-  { label: "3-2-1 CRACK", value: "24.8", change: "+1.4", pct: "+5.97%" },
-  { label: "DXY", value: "104.22", change: "-0.34", pct: "-0.33%" },
-  { label: "S&P 500", value: "5,242", change: "+18.4", pct: "+0.35%" },
-  { label: "EIA CUSHING", value: "427.1", change: "+1.6", pct: "MMbbl" },
+  { label: "WTI CRUDE",   value: "97.87",   change: "-2.25",   pct: "-2.25%"  },
+  { label: "BRENT",       value: "95.92",   change: "-5.24",   pct: "-5.18%"  },
+  { label: "NAT GAS",     value: "2.670",   change: "-0.149",  pct: "-5.29%"  },
+  { label: "RBOB",        value: "3.001",   change: "-0.091",  pct: "-2.93%"  },
+  { label: "HEATING OIL", value: "3.937",   change: "-0.120",  pct: "-2.95%"  },
+  { label: "CL1–CL2",     value: "+7.94",   change: "-1.51",   pct: "BKWDN"   },
+  { label: "3-2-1 CRACK", value: "41.27",   change: "+2.88",   pct: "+7.50%"  },
+  { label: "DXY",         value: "98.820",  change: "-0.830",  pct: "-0.83%"  },
+  { label: "S&P 500",     value: "6,824.7", change: "+249.3",  pct: "+3.79%"  },
+  { label: "EIA CUSHING", value: "+3.42",   change: "",        pct: "MMbbl"   },
 ];
 
 function TickerItem({ label, value, change, pct }: { label: string; value: string; change: string; pct: string }) {
@@ -22,7 +22,7 @@ function TickerItem({ label, value, change, pct }: { label: string; value: strin
     <span className="flex items-center gap-2 px-6 whitespace-nowrap">
       <span className="text-xs font-mono tracking-wider" style={{ color: "var(--muted)" }}>{label}</span>
       <span className="text-xs font-mono font-medium text-white tabular-nums">{value}</span>
-      <span className="text-xs font-mono tabular-nums" style={{ color }}>{change}</span>
+      {change && <span className="text-xs font-mono tabular-nums" style={{ color }}>{change}</span>}
       <span className="text-xs font-mono" style={{ color }}>({pct})</span>
     </span>
   );

@@ -148,7 +148,7 @@ export const briefs: WeeklyBrief[] = [
     regime: "DIVERGENT",
     headline: "Transition Regime: Tight Fundamentals vs Fading Risk Premium",
     executiveSummary:
-      "A mid-week ceasefire announcement triggered a sharp unwind in crude’s geopolitical risk premium, pressuring front-month prices and amplifying the bearish impact of a +6.93 MMbbl crude build versus -0.80 MMbbl expected. However, the physical market remains more resilient than the headline suggests: refinery utilization is still strong at 92.9%, gasoline inventories drew -2.59 MMbbl, and crack spreads remain elevated near $52.99/bbl. Meanwhile, the CL1–CL2 spread compressed from the $14.72 peak to $7.94, signaling easing stress but continued near-term tightness. Bottom line: sentiment weakened faster than fundamentals.",
+      "A mid-week ceasefire announcement triggered a sharp unwind in crude’s geopolitical risk premium, pressuring front-month prices and amplifying the bearish impact of a +6.93 MMbbl crude build versus -0.80 MMbbl expected. However, the physical market remains more resilient than the headline suggests: refinery utilization is still strong at 92.9%, gasoline inventories drew -2.59 MMbbl, and crack spreads remain elevated near $41.27/bbl. Meanwhile, the CL1–CL2 spread compressed from the $14.72 peak to $7.94, signaling easing stress but continued near-term tightness. Bottom line: sentiment weakened faster than fundamentals.",
     inventory: {
       crude: { actual: 6.93, expected: -0.8, fiveYearAvg: 0.6, surprise: 7.73 },
       gasoline: { actual: -2.59, expected: -1.2, fiveYearAvg: -0.8, surprise: -1.39 },
@@ -177,13 +177,13 @@ export const briefs: WeeklyBrief[] = [
       ],
     },
     crackSpreads: {
-      crackSpread321: 52.99,
+      crackSpread321: 41.27,
       crackSpreadChange: 2.88,
       gasolineCrack: 48.2,
       distillateCrack: 57.4,
     },
     production: {
-      domesticProduction: 13.4,
+      domesticProduction: 13.6,
       productionChange: 0.1,
       netImports: 2.6,
       refinerInputs: 16.4,
@@ -206,7 +206,7 @@ export const briefs: WeeklyBrief[] = [
       },
       {
         name: "3-2-1 Crack Spread",
-        value: "$52.99/bbl (+$2.88 WoW)",
+        value: "$41.27/bbl (+$2.88 WoW)",
         direction: "bull",
         weight: "HIGH",
         note: "Historically elevated; refiners running hard — physical crude demand is real",
@@ -242,29 +242,29 @@ export const briefs: WeeklyBrief[] = [
     ],
     divergenceFlag: true,
     divergenceNote:
-      "The ceasefire-driven selloff and a +7.73 MMbbl inventory surprise handed bears a clean narrative — but the physical market isn't cooperating. Refiners are at 92.9% utilization. Gasoline drew -2.59 MMbbl. Crack spreads are $52.99/bbl. The CL1-CL2 spread peaked at $14.72 two days ago and is compressing to $7.94 — still deeply in backwardation, still pricing scarcity. Geopolitical risk premium unwound. Physical demand did not. Selling the headline here means confusing sentiment with fundamentals. Structure overrides inventory until the cracks say otherwise.",
+      "The ceasefire-driven selloff and a +7.73 MMbbl inventory surprise handed bears a clean narrative — but the physical market isn't cooperating. Refiners are at 92.9% utilization. Gasoline drew -2.59 MMbbl. Crack spreads are $41.27/bbl. The CL1-CL2 spread peaked at $14.72 two days ago and is compressing to $7.94 — still deeply in backwardation, still pricing scarcity. Geopolitical risk premium unwound. Physical demand did not. Selling the headline here means confusing sentiment with fundamentals. Structure overrides inventory until the cracks say otherwise.",
     tradeIdeas: [
       {
         structure: "Fade Prompt Tightness / Short Strength Rallies",
         rationale: "Curve remains backwardated, but the rapid collapse from ~$14 to ~$8 suggests prior scarcity pricing is being unwound. Strong structure remains, but momentum has shifted lower. Geopolitics — not fundamentals — are setting price direction right now.",
-        entry: "$63.50–65.00",
-        target: "$60.00–61.00",
-        stop: "$66.50",
+        entry: "$98.50–100.50",
+        target: "$94.00–96.00",
+        stop: "$102.00",
         conviction: "LOW",
       },
       {
         structure: "Long CL1–CL2 Spread on Stabilization Only",
         rationale: "Backwardation remains elevated (+$7.94) but has compressed sharply from the $14.72 peak. Do not chase current levels. Wait for stabilization and confirmation before re-entering curve tightness.",
         entry: "+$7.50–$8.00",
-        target: "+$9.00 to +$10.00",
-        stop: "Break below +$6.00",
+        target: "$9.00–$10.00",
+        stop: "+$6.00",
         conviction: "MEDIUM",
       },
     ],
     keyLevels: [
-      { price: "$66.50", label: "Stop / Re-tightening Signal", type: "resistance" },
-      { price: "$63.50–65.00", label: "Sell Rally Zone", type: "resistance" },
-      { price: "$60.00–61.00", label: "Target / Bull Support", type: "support" },
+      { price: "$102.00", label: "Stop Level", type: "resistance" },
+      { price: "$98.50–100.50", label: "Sell Rally Zone", type: "resistance" },
+      { price: "$94.00–96.00", label: "Target / Bull Support", type: "support" },
       { price: "$58.00", label: "Scenario Bear Target", type: "support" },
     ],
     scenarios: [
@@ -272,21 +272,21 @@ export const briefs: WeeklyBrief[] = [
         title: "Tightness Reasserts / Risk Returns",
         probability: 30,
         direction: "bull",
-        description: "If geopolitical risk returns or next EIA confirms strong product demand with a crude draw, backwardation can re-expand and crude recover sharply. Target: WTI $66–69.",
+        description: "If geopolitical risk returns or next EIA confirms strong product demand with a crude draw, backwardation can re-expand and crude recover sharply. Target: WTI $103–106.",
         trigger: "Spread back above +$9 · Renewed geopolitical tensions · Crude draw + gasoline draw next report",
       },
       {
         title: "Rapid Normalization Continues",
         probability: 35,
         direction: "bear",
-        description: "If the ceasefire holds and spread compresses further, the market continues repricing from crisis premium toward normal backwardation. The headline build narrative takes hold. Target: WTI $58–60.",
+        description: "If the ceasefire holds and spread compresses further, the market continues repricing from crisis premium toward normal backwardation. The headline build narrative takes hold. Target: WTI $91–93.",
         trigger: "Spread below +$6 · Crack spreads fall below $38 · Calm geopolitical backdrop",
       },
       {
         title: "Transition / Range Trade",
         probability: 35,
         direction: "neutral",
-        description: "Market remains caught between still-tight physicals and falling risk premium. Volatility stays high but directional conviction is low. Low edge environment. Target: WTI $60–64.",
+        description: "Market remains caught between still-tight physicals and falling risk premium. Volatility stays high but directional conviction is low. Low edge environment. Target: WTI $94–98.",
         trigger: "Spread holds +$6 to +$8 · Mixed EIA prints · No new geopolitical catalyst",
       },
     ],
@@ -320,8 +320,8 @@ export const briefs: WeeklyBrief[] = [
       conviction: "LOW",
       dominantDriver: "Geopolitics",
     },
-    wtiPriceAtPublish: 61.99,
-    wtiWeeklyChange: -1.82,
+    wtiPriceAtPublish: 97.87,
+    wtiWeeklyChange: -2.25,
   },
   {
     id: "2026-04-04",
@@ -644,18 +644,11 @@ export const briefs: WeeklyBrief[] = [
 ];
 
 export const callHistory: CallRecord[] = [
-  { weekEnding: "April 9, 2026", call: "CAUTIOUSLY_BULLISH", outcome: "OPEN", wtiReturn: 0, notes: "Open — week in progress" },
-  { weekEnding: "April 4, 2026", call: "BEARISH", outcome: "WIN", wtiReturn: -1.95, notes: "WTI sold off to $70.15; short thesis played out" },
-  { weekEnding: "March 28, 2026", call: "BULLISH", outcome: "WIN", wtiReturn: 1.68, notes: "WTI rallied from 73.25 to 74.93" },
-  { weekEnding: "March 21, 2026", call: "CAUTIOUSLY_BULLISH", outcome: "PUSH", wtiReturn: 0.22, notes: "Minimal price action; no clear directional move" },
-  { weekEnding: "March 14, 2026", call: "BEARISH", outcome: "WIN", wtiReturn: -2.10, notes: "Demand miss materialized; sold off to $69.80" },
-  { weekEnding: "March 7, 2026", call: "BULLISH", outcome: "WIN", wtiReturn: 1.45, notes: "Strong draw confirmed directional bias" },
-  { weekEnding: "Feb 28, 2026", call: "NEUTRAL", outcome: "PUSH", wtiReturn: 0.08, notes: "Range-bound week; low conviction correct" },
-  { weekEnding: "Feb 21, 2026", call: "BEARISH", outcome: "LOSS", wtiReturn: 1.82, notes: "OPEC+ surprise announcement reversed thesis" },
-  { weekEnding: "Feb 14, 2026", call: "BULLISH", outcome: "WIN", wtiReturn: 2.20, notes: "Inventory tightening + backwardation deepening" },
-  { weekEnding: "Feb 7, 2026", call: "CAUTIOUSLY_BEARISH", outcome: "WIN", wtiReturn: -1.10, notes: "Demand signals confirmed weakness" },
-  { weekEnding: "Jan 31, 2026", call: "BULLISH", outcome: "LOSS", wtiReturn: -1.55, notes: "Macro selloff overrode physical signal" },
-  { weekEnding: "Jan 24, 2026", call: "BEARISH", outcome: "WIN", wtiReturn: -2.80, notes: "Large inventory build + contango flip" },
+  { weekEnding: "April 9, 2026",  call: "CAUTIOUSLY_BULLISH", outcome: "OPEN", wtiReturn: 0,     notes: "Open — week in progress" },
+  { weekEnding: "April 4, 2026",  call: "BEARISH",            outcome: "WIN",  wtiReturn: -1.95,  notes: "WTI sold off to $70.15; short thesis played out" },
+  { weekEnding: "March 28, 2026", call: "BULLISH",            outcome: "WIN",  wtiReturn: 1.68,   notes: "WTI rallied from 73.25 to 74.93" },
+  { weekEnding: "March 21, 2026", call: "CAUTIOUSLY_BULLISH", outcome: "PUSH", wtiReturn: 0.22,   notes: "Minimal price action; no clear directional move" },
+  { weekEnding: "March 14, 2026", call: "BEARISH",            outcome: "WIN",  wtiReturn: -2.10,  notes: "Demand miss materialized; sold off to $69.80" },
 ];
 
 export function getPerformanceMetrics(): PerformanceMetrics {

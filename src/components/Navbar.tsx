@@ -7,6 +7,8 @@ const nav = [
   { label: "BRIEF", href: "/" },
   { label: "ARCHIVE", href: "/archive" },
   { label: "PERFORMANCE", href: "/performance" },
+  { label: "METHODOLOGY", href: "/methodology" },
+  { label: "CONTACT", href: "/contact" },
 ];
 
 export default function Navbar() {
@@ -22,7 +24,7 @@ export default function Navbar() {
             <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--accent)" }}>LIVE</span>
           </div>
           <div className="h-4 w-px" style={{ background: "var(--border)" }} />
-          <span className="text-sm font-semibold tracking-tight text-white">WTI MARKET INTELLIGENCE</span>
+          <span className="text-sm font-semibold tracking-tight text-white">WTI MACRO & FLOW</span>
         </Link>
 
         {/* Nav */}
@@ -51,11 +53,6 @@ export default function Navbar() {
           <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>
             EIA WPSR TRACKER
           </span>
-          <div className="h-4 w-px" style={{ background: "var(--border)" }} />
-          <span className="text-xs font-mono tabular-nums" style={{ color: "var(--muted)" }}>
-            WTI <span className="text-white">$71.42</span>
-          </span>
-          <span className="text-xs font-mono tabular-nums" style={{ color: "var(--bear)" }}>-0.95%</span>
         </div>
       </div>
     </header>
