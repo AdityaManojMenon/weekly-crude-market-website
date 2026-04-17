@@ -265,7 +265,7 @@ export default async function BriefPage({ params }: Props) {
           </div>
           <div className="flex flex-col flex-1 min-h-0">
             <SectionHeader title="Spread + Momentum" subtitle="CL1–CL2 · 10-day" icon={TrendingUp} />
-            <div className="flex-1 min-h-0">
+            <div className="flex-1 min-h-0" style={{ minHeight: "200px" }}>
               <SpreadMiniChart data={brief.curveStructure.spreadHistory} currentSpread={brief.curveStructure.spread} structure={brief.curveStructure.structure} compact />
             </div>
           </div>
@@ -290,6 +290,66 @@ export default async function BriefPage({ params }: Props) {
                 <SignalBadge direction={signal.direction} size="sm" />
               </div>
             ))}
+
+            {/* Distillate + Cushing supplemental metrics */}
+            {[
+              {
+                name: "Distillates Δ",
+                actual: brief.inventory.distillates.actual,
+                surprise: brief.inventory.distillates.surprise,
+                expected: brief.inventory.distillates.expected,
+                impact: (a: number) => a < -0.5
+                  ? "Draw signals strong heating/diesel demand — supportive for crude pull-through"
+                  : a > 0.5
+                  ? "Build signals soft industrial/heating demand — bearish for refinery run rates"
+                  : "Flat print — neutral signal for downstream demand conditions",
+              },
+              {
+                name: "Cushing Δ",
+                actual: brief.inventory.cushing.actual,
+                surprise: brief.inventory.cushing.actual - brief.inventory.cushing.expected,
+                expected: brief.inventory.cushing.expected,
+                impact: (a: number) => a < -0.5
+                  ? "Cushing draw tightens WTI delivery point — direct upward pressure on prompt prices"
+                  : a > 0.5
+                  ? "Cushing build adds delivery-point supply — weighs on CL1 prompt price directly"
+                  : "Cushing near flat — no acute delivery-point distortion this week",
+              },
+            ].map(({ name, actual, surprise, expected, impact }) => {
+              const dir: "bull" | "bear" | "neutral" =
+                actual < -0.5 ? "bull" : actual > 0.5 ? "bear" : "neutral";
+              return (
+                <div
+                  key={name}
+                  className="rounded-xl px-5 py-4 flex items-start justify-between gap-3 hover:bg-white/[0.02] transition-colors"
+                  style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+                >
+                  <div className="flex flex-col gap-1 flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono tracking-wider text-white font-semibold">{name}</span>
+                      <span className="text-xs font-mono px-1.5 py-0.5 rounded" style={{ background: "rgba(148,163,184,0.08)", color: "var(--muted)", fontSize: "10px" }}>
+                        MEDIUM
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-mono tabular-nums font-bold" style={{ color: dirColor(dir) }}>
+                        {fmtChange(actual)} MMbbl
+                      </span>
+                      <span className="text-xs font-mono tabular-nums" style={{ color: "var(--muted)" }}>
+                        exp {fmtChange(expected)} · surp{" "}
+                        <span style={{ color: surprise < 0 ? "var(--bull)" : surprise > 0 ? "var(--bear)" : "var(--neutral)" }}>
+                          {fmtChange(surprise)}
+                        </span>
+                      </span>
+                    </div>
+                    <p className="text-xs leading-relaxed" style={{ color: "var(--muted)", fontSize: "11px" }}>
+                      {impact(actual)}
+                    </p>
+                  </div>
+                  <SignalBadge direction={dir} size="sm" />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

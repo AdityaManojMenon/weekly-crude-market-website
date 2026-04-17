@@ -276,9 +276,9 @@ export const briefs: WeeklyBrief[] = [
         structure: "Short CL1–CL2 Spread on Bounce",
         conviction: "MEDIUM",
         rationale: "Spread at $3.30 — still positive backwardation but trend is lower. A bounce to $4.00–4.50 without new geopolitical catalyst is a spread-short entry. Target compression toward contango.",
-        entry: "$4.00–4.50 spread level",
+        entry: "$4.00–4.50",
         target: "$1.50–2.00",
-        stop: "$5.50 (re-widening signal)",
+        stop: "$5.50",
       },
     ],
     keyLevels: [
