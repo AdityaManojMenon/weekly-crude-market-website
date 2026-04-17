@@ -82,6 +82,21 @@ export interface CatalystEvent {
   isLive?: boolean;
 }
 
+export interface CrossAssetSignal {
+  label: string;
+  value: string;
+  direction: "bull" | "bear" | "neutral";
+  readthrough: string;
+}
+
+export interface PositioningRead {
+  momentum: "BULLISH" | "BEARISH" | "NEUTRAL" | "MIXED";
+  fundamentals: "BULLISH" | "BEARISH" | "NEUTRAL" | "MIXED";
+  volatility: "HIGH" | "MEDIUM" | "LOW";
+  riskReward: "FAVORABLE" | "UNFAVORABLE" | "MIXED";
+  interpretation: string;
+}
+
 export interface RiskDashboard {
   upsideRisks: string[];
   downsideRisks: string[];
@@ -110,6 +125,10 @@ export interface WeeklyBrief {
   signals: Signal[];
   divergenceFlag: boolean;
   divergenceNote?: string;
+  biasNote?: string;
+  crossAsset: CrossAssetSignal[];
+  crossAssetNote: string;
+  positioning: PositioningRead;
   tradeIdeas: TradeIdea[];
   keyLevels: { price: string; label: string; type: "resistance" | "support" | "pivot" }[];
   scenarios: Scenario[];
@@ -138,6 +157,192 @@ export interface PerformanceMetrics {
 }
 
 export const briefs: WeeklyBrief[] = [
+  {
+    id: "2026-04-16",
+    weekEnding: "April 16, 2026",
+    publishedDate: "April 16, 2026",
+    eiaReleaseDate: "April 16, 2026",
+    reportWeek: "Week of April 9–16, 2026",
+    bias: "BEARISH",
+    biasNote: "Event-Driven",
+    regime: "TRANSITIONAL",
+    headline: "WTI Craters 8% as Ceasefire Holds — Strong Product Draws Can't Offset Risk Premium Collapse",
+    executiveSummary:
+      "WTI fell nearly 8% this week as the market continued to unwind the geopolitical risk premium that previously drove prices above $95. Product markets remain firm — gasoline drew 6.33 MMbbl, distillates fell 3.12 MMbbl, and crack spreads remain elevated at $50.16 — but physical strength is being overshadowed by event-driven repricing. Until the CL1–CL2 spread stabilizes, price action remains macro-led rather than fundamentally led.",
+    inventory: {
+      crude:      { actual: -0.91, expected: -1.61, fiveYearAvg: -0.80, surprise: 0.70 },
+      gasoline:   { actual: -6.33, expected: -1.47, fiveYearAvg: -1.20, surprise: -4.86 },
+      distillates:{ actual: -3.12, expected: -1.97, fiveYearAvg: -1.10, surprise: -1.15 },
+      cushing:    { actual: -1.73, expected: -0.82 },
+      spr: 373.1,
+    },
+    curveStructure: {
+      cl1Price: 89.92,
+      cl2Price: 86.49,
+      spread: 3.43,
+      spreadChange: -4.51,
+      structure: "BACKWARDATION",
+      brentWtiSpread: 8.37,
+      spreadHistory: [
+        { day: "Apr 5",  value: 8.50 },
+        { day: "Apr 6",  value: 8.10 },
+        { day: "Apr 7",  value: 7.94 },
+        { day: "Apr 8",  value: 6.50 },
+        { day: "Apr 9",  value: 5.20 },
+        { day: "Apr 10", value: 4.50 },
+        { day: "Apr 11", value: 3.80 },
+        { day: "Apr 14", value: 3.16 },
+        { day: "Apr 15", value: 3.20 },
+        { day: "Apr 16", value: 3.43 },
+      ],
+    },
+    crackSpreads: {
+      crackSpread321: 50.16,
+      crackSpreadChange: 8.89,
+      gasolineCrack: 52.1,
+      distillateCrack: 55.8,
+    },
+    production: {
+      domesticProduction: 13.6,
+      productionChange: 0.0,
+      netImports: 2.4,
+      refinerInputs: 15.9,
+      refinerUtilization: 89.6,
+    },
+    signals: [
+      {
+        name: "Crude Inventory Surprise",
+        value: "+0.70 MMbbl vs consensus",
+        direction: "neutral",
+        weight: "MEDIUM",
+        note: "Crude came in above expectations but near seasonal avg — not a directional signal",
+      },
+      {
+        name: "CL1–CL2 Spread",
+        value: "+$3.43 (WoW -$4.51)",
+        direction: "bear",
+        weight: "HIGH",
+        note: "Spread collapsed 58% WoW from $7.94 — geopolitical risk premium rapidly unwinding",
+      },
+      {
+        name: "3-2-1 Crack Spread",
+        value: "$50.16/bbl (WoW +$8.89)",
+        direction: "bull",
+        weight: "MEDIUM",
+        note: "Cracks surged WoW — strong downstream demand signal, refining margins elevated",
+      },
+      {
+        name: "Gasoline Draw",
+        value: "-6.33 MMbbl vs -1.47 expected",
+        direction: "bull",
+        weight: "HIGH",
+        note: "Massive bullish product surprise — strongest gasoline draw in months",
+      },
+      {
+        name: "Refinery Utilization",
+        value: "89.6% (-2.4% WoW)",
+        direction: "neutral",
+        weight: "LOW",
+        note: "Utilization pulling back — seasonal maintenance or demand response",
+      },
+    ],
+    divergenceFlag: true,
+    divergenceNote:
+      "Classic divergence: products printing bullish (gasoline -6.33 MMbbl, distillates -3.12 MMbbl) while price craters 8%. The spread collapse from $7.94 → $3.30 is purely geopolitical — ceasefire removing the Hormuz risk premium that had inflated prompt prices. Physical demand did not cause this move. Geopolitics did. Until a new catalyst emerges, price leads fundamentals.",
+    crossAsset: [
+      { label: "DXY",           value: "-0.57%", direction: "bull",    readthrough: "Dollar weakness — tailwind for commodities" },
+      { label: "S&P 500",       value: "+3.17%", direction: "bull",    readthrough: "Risk-on — yet crude diverging lower" },
+      { label: "Brent Premium", value: "+$8.37", direction: "bear",    readthrough: "Widening spread — crude-specific selling pressure" },
+      { label: "Nat Gas",       value: "-0.26%", direction: "neutral", readthrough: "Flat — no correlated energy signal" },
+    ],
+    crossAssetNote: "WTI is lagging supportive macro signals such as dollar weakness and stronger equities. The divergence suggests crude-specific repricing as geopolitical premium fades.",
+    positioning: {
+      momentum:      "BEARISH",
+      fundamentals:  "MIXED",
+      volatility:    "HIGH",
+      riskReward:    "UNFAVORABLE",
+      interpretation: "Negative momentum and elevated volatility lower conviction, while mixed fundamentals argue against aggressive shorts. Favor tactical positioning until signals align.",
+    },
+    tradeIdeas: [
+      {
+        structure: "Fade Prompt Rallies / Short on Strength",
+        conviction: "LOW",
+        rationale: "Spread compression confirms risk premium unwind. Rallies into prior support are sell opportunities unless a new geopolitical catalyst emerges or spread re-widens above $5.",
+        entry: "$92.00–94.00",
+        target: "$86.00–88.00",
+        stop: "$96.00",
+      },
+      {
+        structure: "Short CL1–CL2 Spread on Bounce",
+        conviction: "MEDIUM",
+        rationale: "Spread at $3.30 — still positive backwardation but trend is lower. A bounce to $4.00–4.50 without new geopolitical catalyst is a spread-short entry. Target compression toward contango.",
+        entry: "$4.00–4.50 spread level",
+        target: "$1.50–2.00",
+        stop: "$5.50 (re-widening signal)",
+      },
+    ],
+    keyLevels: [
+      { price: "$96.00", label: "Stop Level", type: "resistance" },
+      { price: "$92.00–94.00", label: "Sell Rally Zone", type: "resistance" },
+      { price: "$88.00–90.00", label: "Near-Term Target", type: "support" },
+      { price: "$84.00–86.00", label: "Bear Scenario Target", type: "support" },
+    ],
+    scenarios: [
+      {
+        title: "Geopolitical Re-escalation",
+        probability: 25,
+        direction: "bull",
+        description: "Ceasefire breaks down or new supply disruption emerges. Risk premium re-enters and spread re-widens rapidly. WTI recovers toward prior range. Target: WTI $96–100.",
+        trigger: "Ceasefire collapse · Hormuz incident · OPEC+ emergency cut",
+      },
+      {
+        title: "Continued De-risking",
+        probability: 45,
+        direction: "bear",
+        description: "Ceasefire holds, spread compresses toward contango, macro headwinds accelerate price normalization. Fundamentals can't offset sentiment. Target: WTI $82–86.",
+        trigger: "Spread below +$2.00 · Crack spreads fall below $38 · Calm geopolitical backdrop",
+      },
+      {
+        title: "Range-Bound Transition",
+        probability: 30,
+        direction: "neutral",
+        description: "Market consolidates between physical support (strong product draws) and geopolitical ceiling removal. Volatility high, direction unclear. Target: WTI $87–93.",
+        trigger: "Spread holds $2.50–4.00 · Mixed EIA prints · No new catalyst",
+      },
+    ],
+    catalysts: [
+      { date: "Apr 23", label: "EIA WPSR", detail: "Next weekly inventory — will product draws confirm or fade?", type: "eia" },
+      { date: "Apr 24", label: "OPEC+ Meeting", detail: "Production policy — any surprise cut could reverse price direction", type: "opec" },
+      { date: "May 2",  label: "Non-Farm Payrolls", detail: "Macro demand proxy — key for demand outlook", type: "macro" },
+      { date: "Live",   label: "Ceasefire Durability", detail: "Any breakdown re-injects geopolitical risk premium", type: "geo", isLive: true },
+      { date: "May 7",  label: "Fed Meeting", detail: "Rate decision and DXY impact on crude", type: "fed" },
+    ],
+    riskDashboard: {
+      upsideRisks: [
+        "Ceasefire breakdown / Hormuz escalation",
+        "OPEC+ unscheduled production cut",
+        "Next EIA confirms strong product draws again",
+        "Dollar weakens sharply (DXY < 97)",
+      ],
+      downsideRisks: [
+        "Ceasefire fully normalized — risk premium to zero",
+        "Spread compresses into contango",
+        "Crack spreads fade below $38/bbl",
+        "Macro slowdown accelerates demand destruction",
+      ],
+      riskScore: 4,
+      riskLabel: "Bearish",
+      volatility: "HIGH",
+      conviction: "LOW",
+      dominantDriver: "Geopolitics",
+    },
+    geopoliticalContext:
+      "The ceasefire that triggered last week's initial selloff is holding, continuing to drain the Hormuz risk premium that had supported WTI above $95. OPEC+'s April 24 meeting is the next key catalyst — any signal of stronger supply discipline or an unexpected cut could reverse the current de-risking trend. Absent a new disruption, the geopolitical tailwind has shifted into a headwind.",
+    outlook:
+      "Directional bias: Tactically Bearish, Structurally Mixed. Physical demand remains resilient, but near-term price direction is still controlled by geopolitical de-risking and spread compression. Fade rallies while CL1–CL2 remains below recent highs. A hold above $3 with another strong product report would be the first signal that downside momentum is fading.",
+    wtiPriceAtPublish: 89.92,
+    wtiWeeklyChange: -7.95,
+  },
   {
     id: "2026-04-09",
     weekEnding: "April 9, 2026",
@@ -243,6 +448,20 @@ export const briefs: WeeklyBrief[] = [
     divergenceFlag: true,
     divergenceNote:
       "The ceasefire-driven selloff and a +7.73 MMbbl inventory surprise handed bears a clean narrative — but the physical market isn't cooperating. Refiners are at 92.9% utilization. Gasoline drew -2.59 MMbbl. Crack spreads are $41.27/bbl. The CL1-CL2 spread peaked at $14.72 two days ago and is compressing to $7.94 — still deeply in backwardation, still pricing scarcity. Geopolitical risk premium unwound. Physical demand did not. Selling the headline here means confusing sentiment with fundamentals. Structure overrides inventory until the cracks say otherwise.",
+    crossAsset: [
+      { label: "DXY",           value: "-0.83%", direction: "bull",    readthrough: "Dollar softening — mild commodity tailwind" },
+      { label: "S&P 500",       value: "-5.81%", direction: "bear",    readthrough: "Risk-off — macro pressure amplifying crude selloff" },
+      { label: "Brent Premium", value: "+$3.85", direction: "neutral", readthrough: "Normal spread — no major supply dislocations" },
+      { label: "Nat Gas",       value: "+1.05%", direction: "neutral", readthrough: "Slight uptick — no energy complex correlation" },
+    ],
+    crossAssetNote: "Broad risk-off macro backdrop amplified the bearish headline print. Crude weakness was multi-factor: large inventory build, equities selling off, and geopolitical premium unwinding simultaneously.",
+    positioning: {
+      momentum:      "BEARISH",
+      fundamentals:  "MIXED",
+      volatility:    "HIGH",
+      riskReward:    "UNFAVORABLE",
+      interpretation: "Broad risk-off environment compounds bearish headline inventory data. Physical signals diverge from price — regime: geopolitics + macro overriding fundamental tightness.",
+    },
     tradeIdeas: [
       {
         structure: "Fade Prompt Tightness / Short Strength Rallies",
@@ -412,6 +631,20 @@ export const briefs: WeeklyBrief[] = [
       },
     ],
     divergenceFlag: false,
+    crossAsset: [
+      { label: "DXY",           value: "-0.38%", direction: "bull",    readthrough: "Slight dollar weakness — modest commodity support" },
+      { label: "S&P 500",       value: "+0.35%", direction: "neutral", readthrough: "Flat equities — no macro directional signal" },
+      { label: "Brent Premium", value: "+$3.44", direction: "neutral", readthrough: "Normal spread — no acute supply dislocations" },
+      { label: "Nat Gas",       value: "+1.42%", direction: "neutral", readthrough: "Slight uptick — no correlated energy signal" },
+    ],
+    crossAssetNote: "Macro backdrop was effectively neutral this week. Crude selloff was fundamentally driven — inventory builds, crack compression, and contango all pointing the same direction without a macro catalyst needed.",
+    positioning: {
+      momentum:      "BEARISH",
+      fundamentals:  "BEARISH",
+      volatility:    "MEDIUM",
+      riskReward:    "UNFAVORABLE",
+      interpretation: "High-conviction bearish regime — inventory builds, crack compression, and contango all aligned. Macro backdrop neutral; crude weakness fundamentally driven.",
+    },
     tradeIdeas: [
       {
         structure: "Short June WTI",
@@ -571,6 +804,20 @@ export const briefs: WeeklyBrief[] = [
       },
     ],
     divergenceFlag: false,
+    crossAsset: [
+      { label: "DXY",           value: "-0.33%", direction: "bull",    readthrough: "Dollar easing — supportive for crude" },
+      { label: "S&P 500",       value: "+0.85%", direction: "bull",    readthrough: "Risk-on — commodities benefit from broad strength" },
+      { label: "Brent Premium", value: "+$3.20", direction: "neutral", readthrough: "Stable spread — no supply dislocation" },
+      { label: "Nat Gas",       value: "+0.60%", direction: "neutral", readthrough: "Slight uptick — no divergence signal" },
+    ],
+    crossAssetNote: "Cross-asset backdrop was constructive and aligned with crude's bullish physical signals. Dollar weakness and risk-on equities reinforced rather than diverged from the fundamental thesis.",
+    positioning: {
+      momentum:      "BULLISH",
+      fundamentals:  "BULLISH",
+      volatility:    "LOW",
+      riskReward:    "FAVORABLE",
+      interpretation: "All systems aligned — physical tightening, curve structure bullish, macro supportive. High-conviction environment with clean risk/reward.",
+    },
     tradeIdeas: [
       {
         structure: "Long June WTI / Long CL Backwardation",
@@ -644,8 +891,9 @@ export const briefs: WeeklyBrief[] = [
 ];
 
 export const callHistory: CallRecord[] = [
-  { weekEnding: "April 9, 2026",  call: "CAUTIOUSLY_BULLISH", outcome: "OPEN", wtiReturn: 0,     notes: "Open — week in progress" },
-  { weekEnding: "April 4, 2026",  call: "BEARISH",            outcome: "WIN",  wtiReturn: -1.95,  notes: "WTI sold off to $70.15; short thesis played out" },
+  { weekEnding: "April 16, 2026", call: "BEARISH",            outcome: "OPEN", wtiReturn: 0,     notes: "Open — week in progress" },
+  { weekEnding: "April 9, 2026",  call: "CAUTIOUSLY_BULLISH", outcome: "LOSS", wtiReturn: -7.77, notes: "Ceasefire-driven selloff overwhelmed physical tightness thesis" },
+  { weekEnding: "April 4, 2026",  call: "BEARISH",            outcome: "WIN",  wtiReturn: -1.95, notes: "WTI sold off to $70.15; short thesis played out" },
   { weekEnding: "March 28, 2026", call: "BULLISH",            outcome: "WIN",  wtiReturn: 1.68,   notes: "WTI rallied from 73.25 to 74.93" },
   { weekEnding: "March 21, 2026", call: "CAUTIOUSLY_BULLISH", outcome: "PUSH", wtiReturn: 0.22,   notes: "Minimal price action; no clear directional move" },
   { weekEnding: "March 14, 2026", call: "BEARISH",            outcome: "WIN",  wtiReturn: -2.10,  notes: "Demand miss materialized; sold off to $69.80" },

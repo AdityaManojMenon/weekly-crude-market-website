@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import TickerTape from "@/components/TickerTape";
+import TickerTapeClient from "@/components/TickerTapeClient";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ background: "var(--background)" }}>
         <Navbar />
         <div className="pt-14">
-          <TickerTape />
+          <TickerTapeClient />
           <main>{children}</main>
         </div>
       </body>

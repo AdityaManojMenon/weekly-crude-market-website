@@ -73,6 +73,12 @@ export default async function BriefPage({ params }: Props) {
           <div className="flex flex-col items-end gap-1.5">
             <span className="text-xs font-mono tracking-wider" style={{ color: "var(--muted)" }}>BIAS</span>
             <SignalBadge direction={biasDir} label={getBiasLabel(brief.bias)} />
+            {brief.biasNote && (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded tracking-wider"
+                style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626", border: "1px solid rgba(220,38,38,0.25)" }}>
+                {brief.biasNote}
+              </span>
+            )}
           </div>
           <div className="h-12 w-px" style={{ background: "var(--border)" }} />
           <div className="flex flex-col items-end gap-1.5">
@@ -119,7 +125,7 @@ export default async function BriefPage({ params }: Props) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Crude Δ", value: `${fmtChange(brief.inventory.crude.actual)} MMbbl`, sub: `Surprise: ${fmtChange(brief.inventory.crude.surprise)}`, dir: brief.inventory.crude.actual < 0 ? "bull" : "bear", Icon: Database },
-            { label: "CL1–CL2", value: `$${brief.curveStructure.spread.toFixed(2)}`, sub: brief.curveStructure.structure === "BACKWARDATION" && brief.curveStructure.spread >= 5 ? "Strong Backwardation" : brief.curveStructure.structure, dir: brief.curveStructure.structure === "BACKWARDATION" ? "bull" : "bear", Icon: TrendingUp },
+            { label: "CL1–CL2", value: `$${brief.curveStructure.spread.toFixed(2)}`, sub: brief.curveStructure.structure === "BACKWARDATION" && brief.curveStructure.spread >= 5 ? "Strong Backwardation" : brief.curveStructure.structure, dir: brief.curveStructure.spreadChange >= 0 ? "bull" : "bear", Icon: TrendingUp },
             { label: "3-2-1 Crack", value: `$${brief.crackSpreads.crackSpread321}/bbl`, sub: `${fmtChange(brief.crackSpreads.crackSpreadChange)} WoW`, dir: brief.crackSpreads.crackSpreadChange > 0 ? "bull" : "bear", Icon: Factory },
             { label: "Ref. Util.", value: `${brief.production.refinerUtilization}%`, sub: `${brief.production.domesticProduction} MMbbl/d prod`, dir: "accent", Icon: Factory },
           ].map(({ label, value, sub, dir, Icon }) => (
@@ -135,6 +141,87 @@ export default async function BriefPage({ params }: Props) {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Market Context Layer: Cross-Asset + Positioning */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+
+        {/* Cross-Asset Readthrough */}
+        <div className="rounded-xl p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="flex items-center gap-2 mb-4">
+            <Globe size={13} style={{ color: "var(--accent)" }} />
+            <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--muted)" }}>Cross-Asset Readthrough</span>
+          </div>
+          <div className="flex flex-col gap-2.5">
+            {brief.crossAsset.map((sig) => (
+              <div key={sig.label} className="flex items-start gap-3">
+                <div className="flex items-center gap-2 w-28 shrink-0 pt-0.5">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    style={{ background: sig.direction === "bull" ? "var(--bull)" : sig.direction === "bear" ? "var(--bear)" : "var(--neutral)" }}
+                  />
+                  <span className="text-xs font-mono font-semibold text-white">{sig.label}</span>
+                </div>
+                <span
+                  className="text-xs font-mono font-bold tabular-nums w-14 shrink-0 pt-0.5"
+                  style={{ color: sig.direction === "bull" ? "var(--bull)" : sig.direction === "bear" ? "var(--bear)" : "var(--neutral)" }}
+                >
+                  {sig.value}
+                </span>
+                <span className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>{sig.readthrough}</span>
+              </div>
+            ))}
+          </div>
+          <div
+            className="mt-4 pt-4 text-xs leading-relaxed"
+            style={{ borderTop: "1px solid var(--border)", color: "var(--text-secondary)" }}
+          >
+            <span className="font-semibold" style={{ color: "var(--accent)" }}>Interpretation: </span>
+            {brief.crossAssetNote}
+          </div>
+        </div>
+
+        {/* Positioning Dashboard */}
+        <div className="rounded-xl p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="flex items-center gap-2 mb-4">
+            <Target size={13} style={{ color: "var(--accent)" }} />
+            <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--muted)" }}>Positioning Read</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { label: "Momentum",    value: brief.positioning.momentum },
+              { label: "Fundamentals", value: brief.positioning.fundamentals },
+              { label: "Volatility",  value: brief.positioning.volatility },
+              { label: "Risk / Reward", value: brief.positioning.riskReward },
+            ].map(({ label, value }) => {
+              const isBull = value === "BULLISH" || value === "FAVORABLE" || value === "LOW";
+              const isBear = value === "BEARISH" || value === "UNFAVORABLE" || value === "HIGH";
+              const col = isBull ? "var(--bull)" : isBear ? "var(--bear)" : "var(--neutral)";
+              const bg  = isBull ? "rgba(34,197,94,0.08)" : isBear ? "rgba(239,68,68,0.08)" : "rgba(148,163,184,0.06)";
+              const bd  = isBull ? "rgba(34,197,94,0.18)" : isBear ? "rgba(239,68,68,0.18)" : "rgba(148,163,184,0.14)";
+              return (
+                <div
+                  key={label}
+                  className="rounded-lg p-3 flex flex-col gap-1"
+                  style={{ background: bg, border: `1px solid ${bd}` }}
+                >
+                  <span className="text-xs font-mono tracking-wide" style={{ color: "var(--muted)" }}>{label.toUpperCase()}</span>
+                  <span className="text-sm font-bold font-mono" style={{ color: col }}>{value}</span>
+                </div>
+              );
+            })}
+          </div>
+          <div
+            className="mt-3 rounded-lg px-3 py-2.5 flex items-start gap-2"
+            style={{ background: "rgba(148,163,184,0.04)", border: "1px solid var(--border)" }}
+          >
+            <AlertTriangle size={11} className="shrink-0 mt-0.5" style={{ color: "var(--accent)" }} />
+            <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+              {brief.positioning.interpretation}
+            </p>
+          </div>
+        </div>
+
       </div>
 
       {/* Inventory + Signals */}
