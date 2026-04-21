@@ -2,13 +2,16 @@ import { briefs, getBiasLabel, getBiasColor, getRegimeLabel } from "@/data/brief
 import SignalBadge from "@/components/SignalBadge";
 import SectionHeader from "@/components/SectionHeader";
 import StatCard from "@/components/StatCard";
-import SpreadMiniChart from "@/components/SpreadMiniChart";
+import SpreadMiniChartWrapper from "@/components/SpreadMiniChartWrapper";
+import BrentWtiChartWrapper from "@/components/BrentWtiChartWrapper";
+import CotNetLengthChartWrapper from "@/components/CotNetLengthChartWrapper";
+import VolatilityChartsWrapper from "@/components/VolatilityChartsWrapper";
 import RiskDashboardComponent from "@/components/RiskDashboard";
 import CatalystCalendar from "@/components/CatalystCalendar";
 import Link from "next/link";
 import {
   FileText, LayoutGrid, Database, Zap, TrendingUp,
-  Target, Globe, Layers, Factory, AlertTriangle, ShieldAlert, CalendarClock,
+  Target, Globe, Layers, Factory, AlertTriangle, ShieldAlert, CalendarClock, BarChart2,
 } from "lucide-react";
 
 export default function Home() {
@@ -245,11 +248,234 @@ export default function Home() {
 
       </div>
 
+      {/* COT Positioning + Brent–WTI Spread */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8" style={{ minHeight: 860 }}>
+
+        {/* COT Panel */}
+        <div className="rounded-xl p-5 flex flex-col" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="flex items-center gap-2 mb-4">
+            <Target size={13} style={{ color: "var(--accent)" }} />
+            <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--muted)" }}>
+              CFTC Positioning (COT)
+            </span>
+            <span className="ml-auto text-xs font-mono px-2 py-0.5 rounded" style={{ background: "rgba(212,146,42,0.08)", color: "var(--muted)", border: "1px solid var(--border)" }}>
+              Managed Money · WTI
+            </span>
+          </div>
+          {brief.cotPositioning ? (() => {
+            const cot = brief.cotPositioning;
+            const sigMap: Record<string, { label: string; color: string; bg: string; border: string }> = {
+              LONG_LIQUIDATION: { label: "Long Liquidation", color: "#ef4444", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)" },
+              SHORT_BUILD:      { label: "Short Build",      color: "#dc2626", bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.3)" },
+              LONG_BUILD:       { label: "Long Build",       color: "#22c55e", bg: "rgba(34,197,94,0.08)",  border: "rgba(34,197,94,0.2)" },
+              SHORT_COVERING:   { label: "Short Covering",   color: "#16a34a", bg: "rgba(34,197,94,0.05)",  border: "rgba(34,197,94,0.15)" },
+            };
+            const sig = sigMap[cot.signal] ?? sigMap.LONG_LIQUIDATION;
+            const pctColor = cot.oneYearPercentile >= 70 ? "var(--bear)" : cot.oneYearPercentile <= 30 ? "var(--bull)" : "var(--accent)";
+            return (
+              <div className="flex flex-col gap-4 flex-1">
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: "NET LENGTH",    value: `${cot.managedMoneyNetLength > 0 ? "+" : ""}${cot.managedMoneyNetLength}k`, sub: "contracts",    color: cot.managedMoneyNetLength > 0 ? "var(--bull)" : "var(--bear)" },
+                    { label: "WoW Δ",         value: `${cot.wowChange > 0 ? "+" : ""}${cot.wowChange}k`,                         sub: "vs prior week", color: cot.wowChange > 0 ? "var(--bull)" : "var(--bear)" },
+                    { label: "1Y PERCENTILE", value: `${cot.oneYearPercentile}th`,                                                sub: "vs 1Y range",   color: pctColor },
+                  ].map(({ label, value, sub, color }) => (
+                    <div key={label} className="rounded-lg p-3 flex flex-col gap-0.5" style={{ background: "#090909", border: "1px solid var(--border-subtle)" }}>
+                      <span style={{ color: "var(--muted)", fontSize: 9, fontFamily: "monospace", letterSpacing: "0.06em" }}>{label}</span>
+                      <span className="font-mono font-bold tabular-nums" style={{ color, fontSize: 16 }}>{value}</span>
+                      <span style={{ color: "var(--muted)", fontSize: 9, fontFamily: "monospace" }}>{sub}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-mono px-2.5 py-1 rounded font-bold tracking-wider"
+                    style={{ background: sig.bg, color: sig.color, border: `1px solid ${sig.border}` }}>
+                    {sig.label.toUpperCase()}
+                  </span>
+                  <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>CFTC signal this week</span>
+                </div>
+                <div className="rounded-lg px-3 py-2.5 flex items-start gap-2"
+                  style={{ background: "rgba(148,163,184,0.04)", border: "1px solid var(--border)" }}>
+                  <AlertTriangle size={11} className="shrink-0 mt-0.5" style={{ color: "var(--accent)" }} />
+                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>{cot.interpretation}</p>
+                </div>
+
+                {/* 12M net length chart */}
+                <div className="pt-3" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--muted)", fontSize: 9 }}>
+                      12M Net Length Trend
+                    </span>
+                  </div>
+                  <CotNetLengthChartWrapper
+                    data={cot.chartData}
+                    currentNetLength={cot.managedMoneyNetLength}
+                    oneYearPercentile={cot.oneYearPercentile}
+                  />
+                </div>
+              </div>
+            );
+          })() : (
+            <div className="flex-1 flex items-center justify-center">
+              <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>COT data not available for this week</span>
+            </div>
+          )}
+        </div>
+
+        {/* Brent–WTI Spread chart */}
+        <div className="rounded-xl p-5 flex flex-col" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <BarChart2 size={13} style={{ color: "var(--accent)" }} />
+              <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--muted)" }}>
+                Brent – WTI Spread
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-mono tabular-nums font-semibold" style={{ color: "var(--accent)" }}>
+                +${brief.curveStructure.brentWtiSpread.toFixed(2)}/bbl
+              </span>
+              <span className="text-xs font-mono px-2 py-0.5 rounded" style={{ background: "rgba(212,146,42,0.08)", color: "var(--muted)", border: "1px solid var(--border)" }}>
+                3-Month
+              </span>
+            </div>
+          </div>
+          {brief.curveStructure.brentWtiHistory ? (
+            <BrentWtiChartWrapper data={brief.curveStructure.brentWtiHistory} currentSpread={brief.curveStructure.brentWtiSpread} />
+          ) : (
+            <div className="flex items-center justify-center py-8">
+              <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>No historical data</span>
+            </div>
+          )}
+          <div className="mt-3 pt-3 text-xs leading-relaxed flex flex-col gap-1.5"
+            style={{ borderTop: "1px solid var(--border-subtle)", color: "var(--text-secondary)" }}>
+            <div>
+              <span className="font-semibold" style={{ color: "var(--accent)" }}>Read-through: </span>
+              {brief.curveStructure.brentWtiSpread > 6
+                ? "Wide Brent premium signals crude-specific WTI weakness or a Brent-side geopolitical bid. A premium above $6/bbl typically reflects Cushing delivery-point stress or distinct supply risk embedded in Brent."
+                : brief.curveStructure.brentWtiSpread < 3
+                ? "Narrow Brent premium — WTI near parity. No significant supply dislocation at Cushing. Watch for re-widening."
+                : "Brent premium within historical norms. No major Cushing supply dislocation. Useful gauge of WTI delivery-point dynamics and Brent-specific geopolitical risk premium."}
+            </div>
+            <div className="flex items-center gap-2 pt-1" style={{ borderTop: "1px solid var(--border-subtle)" }}>
+              <span className="font-mono text-xs" style={{ color: "var(--muted)" }}>Signal:</span>
+              {(() => {
+                const s = brief.curveStructure.brentWtiSpread;
+                const { label, color, detail } =
+                  s > 6  ? { label: "Long Brent / Short WTI",   color: "#ef4444", detail: `Spread ${s.toFixed(2)} — above $6 trigger. Seaborne tightness or Brent-side geopolitical bid.` }
+                : s < 0  ? { label: "WTI Inversion",             color: "#3b82f6", detail: `Spread ${s.toFixed(2)} — WTI above Brent. US Cushing tightness or export-arb pull.` }
+                : s < 3  ? { label: "Long WTI / Short Brent",    color: "#22c55e", detail: `Spread ${s.toFixed(2)} — below $3 trigger. WTI catch-up trade is active.` }
+                :           { label: "Neutral — no edge",         color: "#94a3b8", detail: `Spread ${s.toFixed(2)} in normal $3–$6 range. No structural RV signal.` };
+                return (
+                  <>
+                    <span className="font-mono font-bold text-xs px-2 py-0.5 rounded"
+                      style={{ background: `${color}14`, color, border: `1px solid ${color}30` }}>
+                      {label}
+                    </span>
+                    <span className="text-xs" style={{ color: "var(--muted)" }}>{detail}</span>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Volatility Monitor */}
+      {brief.volatility && (() => {
+        const vol = brief.volatility!;
+        const regimeLabel = vol.regime === "PANIC_REVERSING" ? "PANIC REVERSING"
+          : vol.regime === "PANIC" ? "PANIC"
+          : vol.regime === "STRESSED" ? "STRESSED"
+          : vol.regime === "ELEVATED" ? "ELEVATED"
+          : "CALM";
+        const regimeColor = vol.regime === "PANIC_REVERSING" ? "#f59e0b"
+          : vol.regime === "PANIC" ? "#ef4444"
+          : vol.regime === "STRESSED" ? "#f97316"
+          : vol.regime === "ELEVATED" ? "#eab308"
+          : "#22c55e";
+        const regimeBg = vol.regime === "PANIC_REVERSING" ? "rgba(245,158,11,0.08)"
+          : vol.regime === "PANIC" ? "rgba(239,68,68,0.08)"
+          : vol.regime === "STRESSED" ? "rgba(249,115,22,0.08)"
+          : vol.regime === "ELEVATED" ? "rgba(234,179,8,0.08)"
+          : "rgba(34,197,94,0.08)";
+        return (
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--muted)" }}>
+                OVX / Volatility Monitor
+              </h2>
+              <div style={{ padding: "2px 8px", borderRadius: 4, background: regimeBg, border: `1px solid ${regimeColor}33` }}>
+                <span style={{ color: regimeColor, fontSize: 9, fontFamily: "monospace", fontWeight: 700, letterSpacing: "0.08em" }}>
+                  VOL REGIME: {regimeLabel}
+                </span>
+              </div>
+            </div>
+
+            {/* 5 metric cards */}
+            <div className="grid grid-cols-5 gap-3 mb-4">
+              <div className="rounded-xl p-3" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="text-xs font-mono tracking-wider mb-1" style={{ color: "var(--muted)" }}>OVX LEVEL</div>
+                <div className="text-2xl font-mono font-semibold" style={{ color: "#ef4444" }}>{vol.ovxLevel.toFixed(1)}</div>
+                <div className="text-xs font-mono mt-1" style={{ color: "#2a2a2a" }}>Oil VIX</div>
+                <div className="mt-2 text-xs font-mono" style={{ color: regimeColor, background: regimeBg, padding: "2px 6px", borderRadius: 3, display: "inline-block" }}>{regimeLabel}</div>
+              </div>
+              <div className="rounded-xl p-3" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="text-xs font-mono tracking-wider mb-1" style={{ color: "var(--muted)" }}>WoW Δ</div>
+                <div className="text-2xl font-mono font-semibold" style={{ color: vol.wowChange < 0 ? "#22c55e" : "#ef4444" }}>
+                  {vol.wowChange > 0 ? "+" : ""}{vol.wowChange.toFixed(1)}
+                </div>
+                <div className="text-xs font-mono mt-1" style={{ color: "#2a2a2a" }}>pts</div>
+                <div className="text-xs font-mono mt-2" style={{ color: vol.wowChange < 0 ? "#22c55e" : "#ef4444" }}>
+                  {vol.wowChange < 0 ? "fear unwinding" : "panic increasing"}
+                </div>
+              </div>
+              <div className="rounded-xl p-3" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="text-xs font-mono tracking-wider mb-1" style={{ color: "var(--muted)" }}>1Y PERCENTILE</div>
+                <div className="text-2xl font-mono font-semibold" style={{ color: vol.oneYearPercentile >= 75 ? "#ef4444" : vol.oneYearPercentile >= 50 ? "#f97316" : "#eab308" }}>
+                  {vol.oneYearPercentile.toFixed(0)}<span className="text-sm">th</span>
+                </div>
+                <div className="text-xs font-mono mt-1" style={{ color: "#2a2a2a" }}>vs 1Y range</div>
+                <div className="text-xs font-mono mt-2" style={{ color: "var(--muted)" }}>
+                  {vol.oneYearPercentile >= 75 ? "historically extreme" : vol.oneYearPercentile >= 50 ? "above median" : "below median"}
+                </div>
+              </div>
+              <div className="rounded-xl p-3" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="text-xs font-mono tracking-wider mb-1" style={{ color: "var(--muted)" }}>20D REALIZED VOL</div>
+                <div className="text-2xl font-mono font-semibold" style={{ color: vol.realizedVol20D >= 80 ? "#ef4444" : "#f97316" }}>
+                  {vol.realizedVol20D.toFixed(1)}<span className="text-sm">%</span>
+                </div>
+                <div className="text-xs font-mono mt-1" style={{ color: "#2a2a2a" }}>historical RV</div>
+              </div>
+              <div className="rounded-xl p-3" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+                <div className="text-xs font-mono tracking-wider mb-1" style={{ color: "var(--muted)" }}>VOL RISK PREMIUM</div>
+                <div className="text-2xl font-mono font-semibold" style={{ color: vol.vrp < 0 ? "#3b82f6" : "#ef4444" }}>
+                  {vol.vrp > 0 ? "+" : ""}{vol.vrp.toFixed(1)}
+                </div>
+                <div className="text-xs font-mono mt-1" style={{ color: "#2a2a2a" }}>OVX − RV</div>
+                <div className="text-xs font-mono mt-2" style={{ color: vol.vrp < 0 ? "#3b82f6" : "#ef4444" }}>
+                  {vol.vrp < -5 ? "options cheap" : vol.vrp > 5 ? "options rich" : "near parity"}
+                </div>
+              </div>
+            </div>
+
+            <VolatilityChartsWrapper
+              data={vol.history}
+              ovxLevel={vol.ovxLevel}
+              realizedVol={vol.realizedVol20D}
+              vrp={vol.vrp}
+            />
+          </div>
+        );
+      })()}
+
       {/* Inventory + Spread Chart | Signals */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
 
         {/* Left: Inventory + Spread */}
-        <div className="flex flex-col gap-6 min-h-0">
+        <div className="flex flex-col gap-6 h-full">
+
           <div>
             <SectionHeader title="EIA Inventory Data" subtitle="MMbbl WoW" icon={Database} />
             <div className="rounded-xl overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
@@ -308,10 +534,10 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-col flex-1 min-h-0">
+          <div className="flex-1 flex flex-col">
             <SectionHeader title="Spread + Momentum" subtitle="CL1–CL2 · 10-day" icon={TrendingUp} />
-            <div className="flex-1 min-h-0" style={{ minHeight: "200px" }}>
-              <SpreadMiniChart
+            <div className="flex-1">
+              <SpreadMiniChartWrapper
                 data={brief.curveStructure.spreadHistory}
                 currentSpread={brief.curveStructure.spread}
                 structure={brief.curveStructure.structure}

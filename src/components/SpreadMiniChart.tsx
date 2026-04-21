@@ -145,10 +145,10 @@ export default function SpreadMiniChart({ data, currentSpread, structure, compac
           </span>
         </div>
 
-        {/* Sparkline — flex-1 fills remaining vertical space */}
-        <div className="flex-1 min-h-0">
+        {/* Sparkline — fills remaining flex space */}
+        <div className="flex-1 min-h-0" style={{ minHeight: 140 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={annotated} margin={{ top: 58, right: 8, left: 0, bottom: 2 }}>
+            <LineChart data={annotated} margin={{ top: 52, right: 8, left: 0, bottom: 2 }}>
               <XAxis
                 dataKey="day"
                 tick={{ fill: "#3a3a3a", fontSize: 8, fontFamily: "monospace" }}
