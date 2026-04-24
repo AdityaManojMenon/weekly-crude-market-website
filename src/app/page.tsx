@@ -765,6 +765,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+          <p className="mt-4 text-xs font-mono text-center" style={{ color: "var(--muted)" }}>
+            For informational purposes only. Not investment advice. All views reflect independent analysis of public data and are subject to change. Consult a qualified financial professional before making any investment decisions.
+          </p>
 
       {/* Footer */}
       <div className="pt-5 flex items-center justify-between" style={{ borderTop: "1px solid var(--border)" }}>
