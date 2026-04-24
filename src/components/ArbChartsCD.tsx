@@ -170,7 +170,7 @@ export default function ArbChartsCD() {
               }}
             >
               <LabelList dataKey="crack" position="top"
-                formatter={(v: string | number | undefined) => typeof v === "number" ? `$${v.toFixed(1)}` : v}
+                formatter={(v: string | number | null | undefined) => typeof v === "number" ? `$${v.toFixed(1)}` : (v ?? "")}
                 style={{ fill:"#aaa", fontSize:11, fontFamily:"monospace", fontWeight:700 }} />
             </Bar>
           </BarChart>
