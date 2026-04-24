@@ -4,11 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const nav = [
-  { label: "BRIEF", href: "/" },
-  { label: "ARCHIVE", href: "/archive" },
-  { label: "PERFORMANCE", href: "/performance" },
-  { label: "METHODOLOGY", href: "/methodology" },
-  { label: "CONTACT", href: "/contact" },
+  { label: "BRIEF", href: "/", beta: false },
+  { label: "ARB", href: "/arb", beta: true },
+  { label: "FORECAST", href: "/forecast", beta: true },
+  { label: "ARCHIVE", href: "/archive", beta: false },
+  { label: "PERFORMANCE", href: "/performance", beta: false },
+  { label: "METHODOLOGY", href: "/methodology", beta: false },
+  { label: "CONTACT", href: "/contact", beta: false },
 ];
 
 export default function Navbar() {
@@ -35,7 +37,7 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="px-4 py-1.5 text-xs font-mono tracking-widest transition-all rounded"
+                className="relative px-4 py-1.5 text-xs font-mono tracking-widest transition-all rounded flex items-center gap-1.5"
                 style={{
                   color: active ? "var(--accent)" : "var(--muted)",
                   background: active ? "rgba(212,146,42,0.08)" : "transparent",
@@ -43,6 +45,14 @@ export default function Navbar() {
                 }}
               >
                 {item.label}
+                {item.beta && (
+                  <span
+                    className="text-[9px] font-mono tracking-wider px-1 py-0.5 rounded"
+                    style={{ background: "rgba(99,102,241,0.15)", color: "#818cf8", lineHeight: 1 }}
+                  >
+                    BETA
+                  </span>
+                )}
               </Link>
             );
           })}
