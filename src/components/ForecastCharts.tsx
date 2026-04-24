@@ -292,7 +292,7 @@ export default function ForecastCharts() {
             <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
               {drivers.map(d => (
                 <div key={d.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div style={{ display: "flex", items: "center", gap: 6 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     <div style={{ width: 6, height: 6, borderRadius: 2, background: d.color, marginTop: 3, flexShrink: 0, display: "inline-block" }} />
                     <span style={{ color: "#777", fontSize: 10, fontFamily: "monospace", marginLeft: 6 }}>{d.label}</span>
                   </div>
