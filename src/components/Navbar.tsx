@@ -26,7 +26,7 @@ export default function Navbar() {
             <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--accent)" }}>LIVE</span>
           </div>
           <div className="h-4 w-px" style={{ background: "var(--border)" }} />
-          <span className="text-sm font-semibold tracking-tight text-white">WTI MACRO & FLOW</span>
+          <span className="text-sm font-semibold tracking-tight text-white">MACRO & FLOW</span>
         </Link>
 
         {/* Nav */}
