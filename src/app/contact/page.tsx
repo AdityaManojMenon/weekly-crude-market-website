@@ -51,7 +51,7 @@ export default function ContactPage() {
       {/* Header */}
       <div className="mb-8">
         <p className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "var(--accent)" }}>
-          Macro & Flow
+          CrudeQ
         </p>
         <h1 className="text-2xl font-bold text-white mb-3">Contact</h1>
         <div className="h-px w-12 mb-5" style={{ background: "var(--accent)" }} />
@@ -82,7 +82,7 @@ export default function ContactPage() {
         <div className="flex-1 min-w-0">
           <p className="text-base font-bold text-white mb-0.5">Aditya Manoj Menon</p>
           <p className="text-xs font-semibold mb-1" style={{ color: "var(--accent)" }}>
-            Founder, Macro & Flow
+            Founder, CrudeQ
           </p>
           <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
             Data Engineering × Energy Intelligence × Market Analytics

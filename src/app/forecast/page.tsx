@@ -64,7 +64,7 @@ export default function ForecastPage() {
             <Activity size={15} style={{ color: "var(--accent)" }} />
           </div>
           <p className="text-xs font-mono uppercase tracking-widest" style={{ color: "var(--accent)" }}>
-            Macro & Flow
+            CrudeQ
           </p>
         </div>
         <h1 className="text-3xl font-bold text-white mb-2">EIA Inventory Forecast</h1>

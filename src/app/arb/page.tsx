@@ -71,7 +71,7 @@ export default function ArbPage() {
             <Globe size={15} style={{ color: "var(--accent)" }} />
           </div>
           <p className="text-xs font-mono uppercase tracking-widest" style={{ color: "var(--accent)" }}>
-            Macro & Flow
+            CrudeQ
           </p>
         </div>
         <h1 className="text-3xl font-bold text-white mb-2">Crude Arb Monitor</h1>

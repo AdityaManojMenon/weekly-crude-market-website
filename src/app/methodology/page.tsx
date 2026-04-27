@@ -228,12 +228,12 @@ export default function MethodologyPage() {
       {/* Header */}
       <div className="mb-10">
         <p className="text-xs font-mono uppercase tracking-widest mb-2" style={{ color: "var(--accent)" }}>
-          Macro & Flow
+          CrudeQ
         </p>
         <h1 className="text-2xl font-bold text-white mb-3">Methodology</h1>
         <div className="h-px w-12 mb-5" style={{ background: "var(--accent)" }} />
         <p className="text-sm leading-relaxed max-w-2xl" style={{ color: "#9a9a9a" }}>
-          Macro & Flow combines market data, supply-demand indicators, volatility, positioning,
+          CrudeQ combines market data, supply-demand indicators, volatility, positioning,
           and systematic signal frameworks to assess weekly crude market direction — identifying when
           physical conditions confirm or contradict headline narratives. Every output is reproducible
           from structured data workflows, not manual interpretation.
