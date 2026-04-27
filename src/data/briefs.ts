@@ -98,6 +98,7 @@ export interface Scenario {
   direction: "bull" | "bear" | "neutral";
   description: string;
   trigger: string;
+  probabilityNote?: string;
 }
 
 export interface CallRecord {
@@ -333,48 +334,60 @@ export const briefs: WeeklyBrief[] = [
     tradeIdeas: [
       {
         structure: "Long Brent / Short WTI Relative Value",
-        conviction: "MEDIUM",
-        rationale: "The Brent-WTI spread at $9.03 remains well above the $5.57 3M average, reflecting persistent seaborne risk premium, sanctions enforcement, and tanker-flow disruption, while the U.S. crude surprise build continues to weigh on WTI. Near-term conditions still favor Brent outperformance, but elevated volatility argues for disciplined sizing rather than max conviction.",
-        entry: "Current setup active: $9.03 (add on strength > $9.50)",
-        target: "T1: $10.50–12.50 (escalation scenario)",
-        stop: "< $7.50 spread close",
+        conviction: "HIGH",
+        rationale: "The Brent-WTI spread at $9.03 has broken decisively above the $5.57 3M average and has since expanded to $11.32, confirming that this is no longer a simple mean-reversion dislocation. The move reflects a structurally tighter seaborne market driven by sanctions enforcement, tanker-flow disruption, and persistent Gulf shipping risk, while the bearish U.S. crude inventory backdrop continues to pressure WTI. With Brent pricing global scarcity and WTI anchored by softer domestic balances, relative strength still favors Brent over WTI. Momentum and fundamentals remain aligned, though headline risk requires active risk management.",
+        entry: "Current setup active: $9.03 · Spread now $11.32 — hold core, add selectively on pullbacks",
+        target: "$15.00 base case · $20.00 escalation if Gulf exports fail to normalize by June",
+        stop: "< $8.50 daily close (raised from $7.50 to protect gains after breakout above $11)",
       },
       {
-        structure: "Short Near-Term Crude Volatility (Short OVX / Sell Premium)",
+        structure: 'The "Hormuz Deadlock" Iron Condor',
         conviction: "MEDIUM",
-        rationale: "OVX at 79.4 (89th percentile) signals elevated fear premium. If tensions stabilize and no fresh supply shock emerges, implied volatility can compress as the market digests the recent panic regime. Best expressed via defined-risk short premium structures with smaller sizing due to headline gap risk.",
-        entry: "Current setup active: OVX 79.4 (add on spike > 85)",
-        target: "OVX 60–65",
-        stop: "OVX > 90",
+        rationale: "OVX at 79.4 (89th percentile) remains elevated, but WTI price action is beginning to stabilize within a broad $92–100 range. The market appears to be adapting to the current blockade / ceasefire regime, creating an opportunity to sell expensive panic premium through a defined-risk Iron Condor. The trade benefits from time decay, range-bound price action, and implied volatility compression. Structure: Sell $105 Call / Buy $110 Call · Sell $87 Put / Buy $82 Put (May/June monthly expiry).",
+        entry: "Current setup active while OVX > 75 and WTI holds below $100 / above $90",
+        target: "50% of max credit received, or OVX 60–65",
+        stop: "WTI daily close > $100 or < $90 · OVX > 90 · confirmed geopolitical escalation headline",
       },
     ],
     keyLevels: [
-      { price: ">$8.50 → $10.50–11.50", label: "Brent/WTI — Entry → Target",  type: "pivot" },
-      { price: "< $7.00 spread",         label: "Brent/WTI — Stop",            type: "support" },
-      { price: "OVX >75 → 60–65",        label: "Short Vol — Entry → Target",  type: "pivot" },
-      { price: "OVX > 90",               label: "Short Vol — Stop",            type: "resistance" },
+      { price: "$9.03",          label: "T1 · Brent-WTI Spread — Original Entry",         type: "pivot" },
+      { price: "$11.32",         label: "T1 · Brent-WTI Spread — Current Level (hold)",   type: "pivot" },
+      { price: "Pullbacks",      label: "T1 · Brent-WTI Spread — Add Selectively Here",   type: "pivot" },
+      { price: "$15.00",         label: "T1 · Brent-WTI Spread — Base Case Target",       type: "support" },
+      { price: "$20.00",         label: "T1 · Brent-WTI Spread — Escalation Target",      type: "support" },
+      { price: "< $8.50",        label: "T1 · Brent-WTI Spread — Stop (raised, daily close)", type: "resistance" },
+      { price: "WTI $100",       label: "T2 · Iron Condor — Upper Profit Boundary / Stop",type: "resistance" },
+      { price: "WTI $105 / $110",label: "T2 · Short Call / Long Call Strikes",            type: "resistance" },
+      { price: "WTI $90–$100",   label: "T2 · Iron Condor — Max Profit Zone",             type: "pivot" },
+      { price: "WTI $87 / $82",  label: "T2 · Short Put / Long Put Strikes",              type: "support" },
+      { price: "WTI $90",        label: "T2 · Iron Condor — Lower Profit Boundary / Stop",type: "support" },
+      { price: "OVX 75 → 60–65", label: "T2 · Volatility — Entry → Target",              type: "pivot" },
+      { price: "OVX > 90",       label: "T2 · Volatility — Stop",                        type: "resistance" },
     ],
     scenarios: [
       {
         title: "Bullish Case — Geopolitical Re-escalation",
-        probability: 20,
+        probability: 25,
         direction: "bull",
         description: "Ceasefire breakdown or new supply disruption re-injects risk premium across crude. WTI rallies toward $100–105. Brent may outperform initially, pushing the spread wider, but if U.S. fundamentals tighten, WTI can later catch up and compress the spread.",
         trigger: "Ceasefire collapse · Hormuz incident · OPEC+ emergency cut",
+        probabilityNote: "WTI > $100 / Supply shock or infrastructure strike",
       },
       {
         title: "Bearish Case — Continued De-risking / Normalization",
-        probability: 50,
+        probability: 25,
         direction: "bear",
         description: "Geopolitical premium fades, crude builds continue, and outright prices soften toward $88–92. If Brent risk premium unwinds faster than WTI weakness persists, spread compresses toward $2–4. OVX retreats from PANIC as realized vol normalizes.",
         trigger: "Sustained ceasefire · Consecutive crude builds · Spread below $3.50 · OVX drops below 65",
+        probabilityNote: "WTI < $92 / Islamabad Talks resume",
       },
       {
         title: "Base Case — Range-Bound / Two-Way Trade",
-        probability: 30,
+        probability: 50,
         direction: "neutral",
         description: "Product strength, healthy crack spreads, and firm backwardation should support dips toward $92–94, while crude builds, elevated positioning, and fading geopolitical premium cap rallies near $99–100. WTI remains volatile but broadly range-bound in a $92–99 band, with short-term moves driven more by headlines than durable fundamental repricing. Expect mean-reverting price action rather than a sustained trend.",
         trigger: "Mixed EIA reports · Brent-WTI spread stabilizes at $4–6 · OVX trends lower but stays elevated · No major geopolitical catalyst",
+        probabilityNote: "WTI $94–99 / No major catalyst",
       },
     ],
     catalysts: [

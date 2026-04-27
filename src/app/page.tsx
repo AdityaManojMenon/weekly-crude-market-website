@@ -641,7 +641,7 @@ export default function Home() {
       </div>
 
       {/* Trade Ideas + Scenarios */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-4">
 
         {/* Trade Ideas */}
         <div className="flex flex-col h-full">
@@ -649,8 +649,9 @@ export default function Home() {
           <div className="flex flex-col gap-4 flex-1">
             {brief.tradeIdeas.map((idea, i) => {
               const cs = convictionStyle(idea.conviction);
+              const isLastIdea = i === brief.tradeIdeas.length - 1;
               return (
-                <div key={i} className="rounded-xl p-5"
+                <div key={i} className={`rounded-xl p-5${isLastIdea ? " flex-1" : ""}`}
                   style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <span className="text-sm font-bold text-white leading-snug">{idea.structure}</span>
@@ -675,30 +676,6 @@ export default function Home() {
                 </div>
               );
             })}
-
-            {/* Key Price Levels */}
-            <div className="rounded-xl p-5 mt-auto" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-              <p className="text-xs font-mono uppercase tracking-widest font-bold mb-4"
-                style={{ color: "var(--accent)", letterSpacing: "0.1em" }}>
-                Key Price Levels
-              </p>
-              <div className="space-y-2">
-                {brief.keyLevels.map((lvl, i) => {
-                  const typeColor = lvl.type === "resistance" ? "#dc2626" : lvl.type === "support" ? "#16a34a" : "#d97706";
-                  return (
-                    <div key={i} className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: typeColor }} />
-                        <span className="text-xs truncate" style={{ color: "var(--muted)" }}>{lvl.label}</span>
-                      </div>
-                      <span className="text-xs font-mono font-bold flex-shrink-0" style={{ color: typeColor }}>
-                        {lvl.price}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
           </div>
         </div>
 
@@ -736,6 +713,87 @@ export default function Home() {
             })}
           </div>
         </div>
+      </div>
+
+      {/* Key Price Levels + Probability Distribution — pinned to same row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+
+        {/* Key Price Levels */}
+        <div className="rounded-xl p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <p className="text-xs font-mono uppercase tracking-widest font-bold mb-4"
+            style={{ color: "var(--accent)", letterSpacing: "0.1em" }}>
+            Key Price Levels
+          </p>
+          <div className="space-y-2">
+            {brief.keyLevels.map((lvl, i) => {
+              const typeColor = lvl.type === "resistance" ? "#dc2626" : lvl.type === "support" ? "#16a34a" : "#d97706";
+              return (
+                <div key={i} className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="h-1.5 w-1.5 rounded-full flex-shrink-0" style={{ background: typeColor }} />
+                    <span className="text-xs truncate" style={{ color: "var(--muted)" }}>{lvl.label}</span>
+                  </div>
+                  <span className="text-xs font-mono font-bold flex-shrink-0" style={{ color: typeColor }}>
+                    {lvl.price}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Probability Distribution */}
+        {(() => {
+          const dirColor2: Record<string, string> = { bull: "#22c55e", bear: "#ef4444", neutral: "#64748b" };
+          const dirBg: Record<string, string> = { bull: "rgba(34,197,94,0.05)", bear: "rgba(239,68,68,0.05)", neutral: "rgba(100,116,139,0.05)" };
+          const dirLabel: Record<string, string> = { bull: "Bullish", bear: "Bearish", neutral: "Base" };
+          const dirSym: Record<string, string> = { bull: "▲", bear: "▼", neutral: "⚖" };
+          const sorted = [...brief.scenarios].sort((a, b) => {
+            const order: Record<string, number> = { bull: 0, neutral: 1, bear: 2 };
+            return order[a.direction] - order[b.direction];
+          });
+          return (
+            <div className="rounded-xl p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+              <p className="text-xs font-mono font-bold tracking-widest mb-4" style={{ color: "var(--muted)" }}>
+                TRANSITION PROBABILITY DISTRIBUTION
+              </p>
+
+              {/* Probability Cards */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                {sorted.map((s, i) => {
+                  const [priceLevel, trigger] = s.probabilityNote ? s.probabilityNote.split(" / ") : ["—", "—"];
+                  return (
+                    <div key={i} className="rounded-lg p-3 flex flex-col gap-1.5"
+                      style={{ background: dirBg[s.direction], border: `1px solid ${dirColor2[s.direction]}22`, borderTop: `2px solid ${dirColor2[s.direction]}` }}>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs font-mono" style={{ color: dirColor2[s.direction] }}>{dirSym[s.direction]}</span>
+                        <span className="text-xs font-mono font-bold tracking-wider" style={{ color: dirColor2[s.direction] }}>{dirLabel[s.direction].toUpperCase()}</span>
+                      </div>
+                      <div className="text-3xl font-bold font-mono leading-none" style={{ color: dirColor2[s.direction] }}>{s.probability}%</div>
+                      <div className="text-xs font-mono font-semibold" style={{ color: "#e0e0e0" }}>{priceLevel}</div>
+                      <div className="pt-1.5 mt-auto" style={{ borderTop: `1px solid ${dirColor2[s.direction]}22` }}>
+                        <span className="text-xs font-mono" style={{ color: "var(--muted)", opacity: 0.7 }}>Trigger: </span>
+                        <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>{trigger}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Stacked bar */}
+              <div className="flex rounded-full overflow-hidden mb-4" style={{ height: "6px", gap: "2px" }}>
+                {sorted.map((s, i) => (
+                  <div key={i} style={{ width: `${s.probability}%`, background: dirColor2[s.direction], borderRadius: i === 0 ? "999px 0 0 999px" : i === sorted.length - 1 ? "0 999px 999px 0" : "0", opacity: 0.75 }} />
+                ))}
+              </div>
+
+              {/* Summary */}
+              <p className="text-xs leading-relaxed" style={{ color: "var(--muted)", opacity: 0.75 }}>
+                Base case dominates at 50%, reflecting a market that has priced in sustained but stable geopolitical friction. Bullish and bearish tails share equal weight — a supply shock or infrastructure strike is as likely as a diplomatic resumption or demand deterioration at current levels.
+              </p>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Risk Dashboard */}
