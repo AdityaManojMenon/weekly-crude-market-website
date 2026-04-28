@@ -8,7 +8,7 @@ const nav = [
   { label: "ARB", href: "/arb", beta: true },
   { label: "FORECAST", href: "/forecast", beta: true },
   { label: "ARCHIVE", href: "/archive", beta: false },
-  { label: "PERFORMANCE", href: "/performance", beta: false },
+  { label: "PERFORMANCE", href: "/performance", beta: true },
   { label: "METHODOLOGY", href: "/methodology", beta: false },
   { label: "CONTACT", href: "/contact", beta: false },
 ];

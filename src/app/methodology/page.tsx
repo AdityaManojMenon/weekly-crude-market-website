@@ -1,8 +1,121 @@
 import {
   Database, TrendingUp, BarChart2, Activity, Globe, FileText,
-  GitBranch, ExternalLink, ArrowRight, Download, Zap, Layers,
-  Target, ClipboardList, AlertTriangle, ShieldAlert, Users, Eye,
+  GitBranch, ExternalLink, ArrowRight,
+  Target, AlertTriangle, ShieldAlert, Users, Eye,
+  Archive, LineChart, BarChart, FlaskConical,
 } from "lucide-react";
+
+const platformModules = [
+  {
+    title: "Weekly Brief",
+    status: "LIVE" as const,
+    href: "/",
+    icon: FileText,
+    desc: "Primary flagship report using fresh weekly EIA data, futures, and systematic signal scoring.",
+  },
+  {
+    title: "Performance",
+    status: "LIVE" as const,
+    href: "/performance",
+    icon: LineChart,
+    desc: "Forward-tracked model portfolio with risk-managed trade evaluation and R-based metrics.",
+  },
+  {
+    title: "Forecast",
+    status: "BETA" as const,
+    href: "/forecast",
+    icon: FlaskConical,
+    desc: "Experimental inventory forecasting engine using historical seasonal patterns and signal inputs.",
+  },
+  {
+    title: "Arb",
+    status: "BETA" as const,
+    href: "/arb",
+    icon: BarChart,
+    desc: "Experimental physical arbitrage and route economics dashboard for spread and basis tracking.",
+  },
+  {
+    title: "Archive",
+    status: "ARCHIVE" as const,
+    href: "/archive",
+    icon: Archive,
+    desc: "Historical weekly reports and prior market views — full record from inception.",
+  },
+];
+
+const briefSteps = [
+  {
+    num: "01",
+    title: "Data Inputs",
+    color: "#d97706",
+    items: [
+      "EIA WPSR (crude, Cushing, gasoline, distillates, refinery utilization)",
+      "WTI / Brent front-month futures",
+      "CL1–CL2 term structure (prompt spread)",
+      "RBOB / HO / 3-2-1 crack spreads",
+      "OVX & 20-day realized volatility",
+      "CFTC COT managed money positioning",
+      "DXY and macro inputs",
+      "Geopolitical developments",
+    ],
+  },
+  {
+    num: "02",
+    title: "Signal Engine",
+    color: "#3b82f6",
+    items: [
+      "Weighted framework scores directional pressure across:",
+      "→ Inventories",
+      "→ Curve structure",
+      "→ Product demand",
+      "→ Positioning",
+      "→ Volatility",
+      "→ Relative value",
+      "→ Macro context",
+      "Signals can confirm or contradict one another.",
+    ],
+  },
+  {
+    num: "03",
+    title: "Regime Classification",
+    color: "#8b5cf6",
+    items: [
+      "Market classified into one of:",
+      "→ Tightening",
+      "→ Transitional",
+      "→ Divergence",
+      "→ Event Override",
+      "→ Risk-Off Macro",
+      "Regime determines which signals carry the most weight.",
+    ],
+  },
+  {
+    num: "04",
+    title: "Risk Controls",
+    color: "#ef4444",
+    items: [
+      "Conviction is reduced when:",
+      "→ Signals conflict",
+      "→ Volatility is extreme",
+      "→ Geopolitical uncertainty dominates",
+      "→ Data quality is weak",
+    ],
+  },
+  {
+    num: "05",
+    title: "Output Generation",
+    color: "#22c55e",
+    items: [
+      "Directional bias",
+      "Key metrics dashboard",
+      "Scenario analysis",
+      "Trade frameworks",
+      "Catalysts",
+      "Geopolitical context",
+      "Risk dashboard",
+    ],
+  },
+];
 
 const inputs = [
   {
@@ -212,14 +325,6 @@ const dataSources = [
   },
 ];
 
-const flowSteps = [
-  { label: "Raw Data",       icon: Download,     color: "#d97706" },
-  { label: "Signal Engine",  icon: Zap,          color: "#3b82f6" },
-  { label: "Regime Overlay", icon: Layers,       color: "#8b5cf6" },
-  { label: "Risk Controls",  icon: ShieldAlert,  color: "#ef4444" },
-  { label: "Trade Output",   icon: Target,       color: "#16a34a" },
-  { label: "Call Tracking",  icon: ClipboardList, color: "#d4922a" },
-];
 
 export default function MethodologyPage() {
   return (
@@ -240,61 +345,540 @@ export default function MethodologyPage() {
         </p>
       </div>
 
-      {/* Analytical Flow */}
+      {/* ── Platform Modules Overview ─────────────────────────────────────── */}
       <div className="mb-10">
         <p className="text-xs font-mono uppercase tracking-widest font-bold mb-5"
           style={{ color: "var(--muted)", letterSpacing: "0.1em" }}>
-          How the Model Works
+          Platform Modules
         </p>
-        <div className="rounded-xl overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-          <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom: "1px solid var(--border)" }}>
-            {flowSteps.map((step, i) => {
-              const Icon = step.icon;
-              return (
-                <div key={step.label} className="flex items-center">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="flex items-center justify-center w-10 h-10 rounded-xl"
-                      style={{ background: `${step.color}18`, border: `1.5px solid ${step.color}50`, boxShadow: `0 0 12px ${step.color}20` }}>
-                      <Icon size={16} style={{ color: step.color }} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {platformModules.map(({ title, status, icon: Icon, desc }) => {
+            const statusConfig = {
+              LIVE:    { label: "LIVE",    bg: "rgba(34,197,94,0.1)",    border: "rgba(34,197,94,0.25)",    color: "#22c55e" },
+              BETA:    { label: "BETA",    bg: "rgba(99,102,241,0.12)",  border: "rgba(99,102,241,0.25)",   color: "#818cf8" },
+              ARCHIVE: { label: "ARCHIVE", bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.2)",   color: "#94a3b8" },
+            }[status];
+            return (
+              <div
+                key={title}
+                className="rounded-xl p-4 flex flex-col gap-3"
+                style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ background: "rgba(212,146,42,0.1)", border: "1px solid rgba(212,146,42,0.2)" }}
+                    >
+                      <Icon size={13} style={{ color: "var(--accent)" }} />
                     </div>
-                    <span className="text-[9px] font-mono font-bold tracking-wide whitespace-nowrap"
-                      style={{ color: step.color }}>
-                      {step.label.toUpperCase()}
-                    </span>
+                    <span className="text-sm font-semibold text-white">{title}</span>
                   </div>
-                  {i < flowSteps.length - 1 && (
-                    <ArrowRight size={16} className="mx-2 shrink-0" style={{ color: "#333" }} />
-                  )}
+                  <span
+                    className="text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded"
+                    style={{ background: statusConfig.bg, border: `1px solid ${statusConfig.border}`, color: statusConfig.color }}
+                  >
+                    {statusConfig.label}
+                  </span>
                 </div>
-              );
-            })}
+                <p className="text-[11px] leading-relaxed" style={{ color: "var(--muted)" }}>{desc}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── How the Weekly Brief Is Generated ────────────────────────────── */}
+      <div className="mb-10">
+        <p className="text-xs font-mono uppercase tracking-widest font-bold mb-1"
+          style={{ color: "var(--muted)", letterSpacing: "0.1em" }}>
+          How the Weekly Brief Is Generated
+        </p>
+        <p className="text-xs mb-5 leading-relaxed" style={{ color: "#555" }}>
+          Weekly Research Pipeline
+        </p>
+
+        {/* Pipeline flow strip */}
+        <div
+          className="rounded-xl px-5 py-4 flex items-center gap-2 flex-wrap mb-6"
+          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+        >
+          {["Raw Data", "Signal Engine", "Regime Overlay", "Trade Output", "Publish"].map((step, i, arr) => (
+            <div key={step} className="flex items-center gap-2">
+              <span className="text-xs font-mono font-semibold" style={{ color: i === arr.length - 1 ? "var(--accent)" : "#f0f0f0" }}>
+                {step}
+                {i === arr.length - 1 && (
+                  <span className="ml-1.5 text-[9px] tracking-wider px-1.5 py-0.5 rounded font-mono align-middle"
+                    style={{ background: "rgba(212,146,42,0.12)", border: "1px solid rgba(212,146,42,0.25)", color: "var(--accent)" }}>
+                    MANUAL
+                  </span>
+                )}
+              </span>
+              {i < arr.length - 1 && <ArrowRight size={12} style={{ color: "#333", flexShrink: 0 }} />}
+            </div>
+          ))}
+        </div>
+
+        {/* Author note */}
+        <div
+          className="flex items-start gap-3 px-4 py-3 rounded-xl mb-6"
+          style={{ background: "rgba(212,146,42,0.04)", border: "1px solid rgba(212,146,42,0.15)" }}
+        >
+          <div
+            className="w-4 h-4 rounded shrink-0 mt-0.5 flex items-center justify-center text-[9px] font-bold font-mono"
+            style={{ background: "rgba(212,146,42,0.15)", color: "var(--accent)", border: "1px solid rgba(212,146,42,0.25)" }}
+          >
+            i
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
+            Signals are interpreted by the author and the brief is{" "}
+            <span className="text-white font-medium">manually constructed</span>. All data is pulled and
+            basic signals are automatically computed and displayed to the author, who uses them to update
+            metrics and graphs. Trade signals are based on the author&apos;s interpretation of geopolitical
+            events and data — fundamentals, futures curve, and crack spreads.
+          </p>
+        </div>
+
+        {/* Step cards */}
+        <div className="space-y-3">
+          {briefSteps.map((step) => (
+            <div
+              key={step.num}
+              className="rounded-xl overflow-hidden"
+              style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+            >
+              <div
+                className="flex items-center gap-3 px-5 py-3"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <span className="text-[10px] font-mono font-bold tabular-nums" style={{ color: step.color }}>
+                  Step {step.num}
+                </span>
+                <div className="w-px h-3" style={{ background: "rgba(255,255,255,0.08)" }} />
+                <span className="text-sm font-semibold text-white">{step.title}</span>
+              </div>
+              <div className="px-5 py-3 flex flex-wrap gap-x-6 gap-y-1">
+                {step.items.map((item, i) => (
+                  <div key={i} className="flex items-start gap-2 w-full sm:w-auto">
+                    {!item.startsWith("→") && !item.endsWith(":") ? (
+                      <>
+                        <span className="mt-1.5 w-1 h-1 rounded-full shrink-0" style={{ background: step.color, opacity: 0.7 }} />
+                        <span className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>{item}</span>
+                      </>
+                    ) : item.startsWith("→") ? (
+                      <span className="text-xs font-mono leading-relaxed" style={{ color: "#555", paddingLeft: "12px" }}>{item}</span>
+                    ) : (
+                      <span className="text-xs font-medium w-full mb-0.5" style={{ color: "#9a9a9a" }}>{item}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Performance Tracking Methodology ─────────────────────────────── */}
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-1">
+          <p className="text-xs font-mono uppercase tracking-widest font-bold"
+            style={{ color: "var(--muted)", letterSpacing: "0.1em" }}>
+            Performance Tracking Methodology
+          </p>
+          <span
+            className="text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded"
+            style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", color: "#22c55e" }}
+          >
+            FORWARD-LIVE
+          </span>
+        </div>
+        <p className="text-xs mb-6 leading-relaxed" style={{ color: "#555" }}>
+          Forward-Live Performance System
+        </p>
+
+        {/* Inception note */}
+        <div
+          className="flex items-start gap-3 px-4 py-3 rounded-xl mb-6"
+          style={{ background: "rgba(34,197,94,0.04)", border: "1px solid rgba(34,197,94,0.15)" }}
+        >
+          <div
+            className="w-4 h-4 rounded shrink-0 mt-0.5 flex items-center justify-center"
+            style={{ background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.3)" }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#22c55e" }} />
+          </div>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
+            Official performance statistics begin from the launch of the upgraded tracker.
+            Prior reports remain available in the{" "}
+            <span className="text-white font-medium">Archive</span> for research reference
+            but are <span className="text-white font-medium">not included</span> in live performance metrics.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+
+          {/* What Is Tracked */}
+          <div
+            className="rounded-xl overflow-hidden"
+            style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+          >
+            <div
+              className="px-5 py-3 text-xs font-mono tracking-widest uppercase"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", color: "var(--muted)" }}
+            >
+              What Is Tracked
+            </div>
+            <div className="p-4 flex flex-wrap gap-2">
+              {[
+                "Strategy", "Entry", "Target", "Stop", "Conviction",
+                "Size (R)", "Thesis", "Status", "Exit Price",
+                "P&L", "Days Open", "Result", "R-Multiple",
+              ].map((field) => (
+                <span
+                  key={field}
+                  className="text-[10px] font-mono px-2 py-1 rounded"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "#9a9a9a" }}
+                >
+                  {field}
+                </span>
+              ))}
+            </div>
           </div>
 
-          {/* Flow step descriptions */}
-          <div className="grid grid-cols-3 divide-x" style={{ borderTop: "1px solid var(--border)", borderColor: "var(--border)" }}>
+          {/* How Trades Are Closed */}
+          <div
+            className="rounded-xl overflow-hidden"
+            style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+          >
+            <div
+              className="px-5 py-3 text-xs font-mono tracking-widest uppercase"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", color: "var(--muted)" }}
+            >
+              How Trades Are Closed
+            </div>
+            <div className="px-5 py-4 space-y-2">
+              {[
+                "Target is reached",
+                "Stop is reached",
+                "Manual thesis change",
+                "Time / event expiry",
+                "Options premium objective reached",
+              ].map((item) => (
+                <div key={item} className="flex items-center gap-2.5">
+                  <div className="w-1 h-1 rounded-full shrink-0" style={{ background: "rgba(212,146,42,0.6)" }} />
+                  <span className="text-xs" style={{ color: "var(--muted)" }}>{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Position Sizing Framework */}
+        <div
+          className="rounded-xl overflow-hidden mb-4"
+          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+        >
+          <div
+            className="px-5 py-3 flex items-center justify-between"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+          >
+            <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--muted)" }}>
+              Position Sizing Framework
+            </span>
+            <span className="text-[10px] font-mono" style={{ color: "var(--muted)" }}>
+              1.0R = 0.75% model portfolio NAV at stop
+            </span>
+          </div>
+          {/* Column headers */}
+          <div className="grid grid-cols-3 px-5 pt-3 pb-1.5">
+            {["CONVICTION", "SIZE", "NAV AT RISK"].map((h) => (
+              <div key={h} className="text-[9px] font-mono tracking-widest" style={{ color: "var(--muted)" }}>{h}</div>
+            ))}
+          </div>
+          {[
+            { label: "Low",         r: "0.25R", nav: "~0.19%", color: "#6b6b6b" },
+            { label: "Medium",      r: "0.50R", nav: "~0.38%", color: "#94a3b8" },
+            { label: "Medium-High", r: "0.75R", nav: "~0.56%", color: "#d4922a" },
+            { label: "High",        r: "1.00R", nav: "~0.75%", color: "#22c55e" },
+          ].map((row, i, arr) => (
+            <div
+              key={row.label}
+              className="grid grid-cols-3 items-center px-5 py-2.5 hover:bg-white/[0.015] transition-colors"
+              style={{
+                borderTop: "1px solid rgba(255,255,255,0.04)",
+                marginBottom: i === arr.length - 1 ? "4px" : 0,
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: row.color }} />
+                <span
+                  className="text-[10px] font-mono tracking-wider px-1.5 py-0.5 rounded"
+                  style={{ background: `${row.color}15`, color: row.color, border: `1px solid ${row.color}28` }}
+                >
+                  {row.label.toUpperCase()}
+                </span>
+              </div>
+              <span className="text-xs font-mono font-semibold tabular-nums" style={{ color: "#f0f0f0" }}>
+                {row.r}
+              </span>
+              <span className="text-xs font-mono tabular-nums" style={{ color: "var(--muted)" }}>
+                {row.nav}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Metrics Displayed */}
+        <div
+          className="rounded-xl overflow-hidden mb-4"
+          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+        >
+          <div
+            className="px-5 py-3 text-xs font-mono tracking-widest uppercase"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", color: "var(--muted)" }}
+          >
+            Metrics Displayed on Performance Tab
+          </div>
+          <div className="p-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
-              { label: "Inputs", color: "#d97706", desc: "EIA inventory, curve, cracks, COT positioning, OVX/vol, Brent–WTI spread, and macro/geopolitical overlays ingested and normalized." },
-              { label: "Signal Engine", color: "#3b82f6", desc: "Weighted composite score across six input factors. Divergence between signals triggers elevated analytical priority and flags regime uncertainty." },
-              { label: "Regime Overlay", color: "#8b5cf6", desc: "Active regime classified: Normal Tight, Transitional, Divergent, or Event Override. Regime context dynamically re-weights the composite signal." },
-            ].map(s => (
-              <div key={s.label} className="p-4">
-                <p className="text-[9px] font-mono font-bold mb-1" style={{ color: s.color }}>{s.label.toUpperCase()}</p>
-                <p className="text-[11px] leading-relaxed" style={{ color: "var(--muted)" }}>{s.desc}</p>
+              "Win Rate", "Since Inception Return", "Average R",
+              "Equity Curve", "Strategy Breakdown", "Conviction Accuracy",
+              "Open Positions", "Trade History",
+            ].map((m) => (
+              <div key={m} className="flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full shrink-0" style={{ background: "var(--accent)", opacity: 0.7 }} />
+                <span className="text-xs" style={{ color: "var(--muted)" }}>{m}</span>
               </div>
             ))}
           </div>
-          <div className="grid grid-cols-3 divide-x" style={{ borderTop: "1px solid var(--border)", borderColor: "var(--border)" }}>
-            {[
-              { label: "Risk Controls", color: "#ef4444", desc: "Conviction is downgraded to Low when signals conflict. Event override flags (geopolitical, OPEC) suppress quantitative outputs and force qualitative framing." },
-              { label: "Trade Output", color: "#16a34a", desc: "Directional bias, trade ideas with entry/target/stop, scenario probabilities, and catalyst watchlist generated from signal outputs and regime context." },
-              { label: "Call Tracking", color: "#d4922a", desc: "Every directional call is logged to call_tracker.csv with outcome, WTI price at publish, and 1-week return. Win rate by regime tracked continuously." },
-            ].map(s => (
-              <div key={s.label} className="p-4">
-                <p className="text-[9px] font-mono font-bold mb-1" style={{ color: s.color }}>{s.label.toUpperCase()}</p>
-                <p className="text-[11px] leading-relaxed" style={{ color: "var(--muted)" }}>{s.desc}</p>
-              </div>
+        </div>
+
+        {/* GitHub link */}
+        <a
+          href="https://github.com/AdityaManojMenon/weekly-crude-market-brief"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between px-5 py-3.5 rounded-xl transition-opacity hover:opacity-75 group"
+          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="flex items-center justify-center w-7 h-7 rounded-lg shrink-0"
+              style={{ background: "rgba(226,232,240,0.06)", border: "1px solid rgba(226,232,240,0.12)" }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#e2e8f0" }}>
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-white">AdityaManojMenon / weekly-crude-market-brief</p>
+              <p className="text-[11px]" style={{ color: "var(--muted)" }}>
+                Full pipeline source · call tracker · briefs · data cache · requirements
+              </p>
+            </div>
+          </div>
+          <ExternalLink size={12} className="shrink-0" style={{ color: "var(--muted)" }} />
+        </a>
+      </div>
+
+      {/* ── Beta Modules ──────────────────────────────────────────────────── */}
+      <div className="mb-10">
+        <div className="flex items-center gap-3 mb-1">
+          <p className="text-xs font-mono uppercase tracking-widest font-bold"
+            style={{ color: "var(--muted)", letterSpacing: "0.1em" }}>
+            Experimental Modules
+          </p>
+          <span
+            className="text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded"
+            style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.25)", color: "#818cf8" }}
+          >
+            BETA
+          </span>
+        </div>
+        <p className="text-xs mb-6 leading-relaxed" style={{ color: "#555" }}>
+          The CrudeQ frontend spans three independent research engines — each with its own data pipeline and GitHub repository.
+        </p>
+
+        {/* 3-repo infrastructure note */}
+        <div
+          className="rounded-xl px-5 py-3.5 mb-6 flex items-start gap-3"
+          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+        >
+          <div className="flex items-center gap-1 shrink-0 mt-0.5">
+            {["#d97706", "#8b5cf6", "#3b82f6"].map((c) => (
+              <div key={c} className="w-2 h-2 rounded-full" style={{ background: c }} />
             ))}
           </div>
+          <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
+            <span className="text-white font-medium">Frontend infrastructure:</span>{" "}
+            The CrudeQ platform is backed by three separate Python engines —{" "}
+            <span className="font-mono" style={{ color: "var(--accent)" }}>weekly-crude-market-brief</span>{" "}
+            (core brief pipeline),{" "}
+            <span className="font-mono" style={{ color: "#818cf8" }}>wti-balance-monitor</span>{" "}
+            (Forecast module), and{" "}
+            <span className="font-mono" style={{ color: "#3b82f6" }}>physical-arb-engine</span>{" "}
+            (Arb module). Each runs independently and feeds structured outputs to the frontend.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {/* Forecast Beta */}
+          <div
+            className="rounded-xl overflow-hidden flex flex-col"
+            style={{ background: "var(--card)", border: "1px solid rgba(99,102,241,0.2)" }}
+          >
+            {/* Header */}
+            <div
+              className="px-5 py-3.5 flex items-center justify-between"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(99,102,241,0.04)" }}
+            >
+              <div className="flex items-center gap-2.5">
+                <FlaskConical size={13} style={{ color: "#818cf8" }} />
+                <span className="text-sm font-semibold text-white">Forecast</span>
+              </div>
+              <span
+                className="text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded"
+                style={{ background: "rgba(99,102,241,0.12)", border: "1px solid rgba(99,102,241,0.3)", color: "#818cf8" }}
+              >
+                BETA
+              </span>
+            </div>
+
+            {/* Purpose */}
+            <div className="px-5 pt-4 pb-3">
+              <p className="text-[11px] leading-relaxed mb-4" style={{ color: "var(--muted)" }}>
+                Designed to estimate upcoming EIA inventory builds/draws <span className="text-white">before release</span>,
+                using supply-demand balance inputs derived from the{" "}
+                <span className="font-mono text-[10px]" style={{ color: "#818cf8" }}>wti-balance-monitor</span> engine.
+                Balance construction follows:{" "}
+                <span className="font-mono text-[10px] text-white">
+                  Production + Imports − Exports − Refinery Runs
+                </span>
+              </p>
+
+              <p className="text-[9px] font-mono tracking-widest mb-2" style={{ color: "var(--muted)" }}>INPUTS MAY INCLUDE</p>
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {["Production", "Imports", "Exports", "Refinery Runs", "Seasonality", "Prior Balances"].map((item) => (
+                  <span
+                    key={item}
+                    className="text-[10px] font-mono px-2 py-0.5 rounded"
+                    style={{ background: "rgba(99,102,241,0.08)", border: "1px solid rgba(99,102,241,0.18)", color: "#818cf8" }}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+
+              <p className="text-[9px] font-mono tracking-widest mb-2" style={{ color: "var(--muted)" }}>CURRENT STATUS</p>
+              <div className="space-y-1.5 mb-4">
+                {[
+                  "Beta environment — under active development",
+                  "Layouts may use stale or sample data",
+                  "Forecasts require continuous validation before full production deployment",
+                ].map((s) => (
+                  <div key={s} className="flex items-start gap-2">
+                    <div className="w-1 h-1 rounded-full shrink-0 mt-1.5" style={{ background: "#818cf8", opacity: 0.6 }} />
+                    <span className="text-[11px] leading-snug" style={{ color: "var(--muted)" }}>{s}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* GitHub link */}
+            <div className="mt-auto">
+              <a
+                href="https://github.com/AdityaManojMenon/wti-balance-monitor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 px-5 py-3 transition-opacity hover:opacity-75"
+                style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#818cf8", flexShrink: 0 }}>
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+                <span className="text-[11px] font-mono" style={{ color: "#818cf8" }}>wti-balance-monitor</span>
+                <ExternalLink size={10} className="ml-auto shrink-0" style={{ color: "var(--muted)" }} />
+              </a>
+            </div>
+          </div>
+
+          {/* Arb Beta */}
+          <div
+            className="rounded-xl overflow-hidden flex flex-col"
+            style={{ background: "var(--card)", border: "1px solid rgba(59,130,246,0.2)" }}
+          >
+            {/* Header */}
+            <div
+              className="px-5 py-3.5 flex items-center justify-between"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(59,130,246,0.04)" }}
+            >
+              <div className="flex items-center gap-2.5">
+                <BarChart size={13} style={{ color: "#3b82f6" }} />
+                <span className="text-sm font-semibold text-white">Arb</span>
+              </div>
+              <span
+                className="text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded"
+                style={{ background: "rgba(59,130,246,0.12)", border: "1px solid rgba(59,130,246,0.3)", color: "#3b82f6" }}
+              >
+                BETA
+              </span>
+            </div>
+
+            {/* Purpose */}
+            <div className="px-5 pt-4 pb-3">
+              <p className="text-[11px] leading-relaxed mb-4" style={{ color: "var(--muted)" }}>
+                Designed to analyze relative economics of crude flows, benchmark spreads, and route
+                opportunities across regions — powered by the{" "}
+                <span className="font-mono text-[10px]" style={{ color: "#3b82f6" }}>physical-arb-engine</span>.
+              </p>
+
+              <p className="text-[9px] font-mono tracking-widest mb-2" style={{ color: "var(--muted)" }}>INTENDED USE CASES</p>
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {["Brent-WTI Dislocations", "Export Route Economics", "Freight-Adjusted Opportunities", "Grade Differentials", "Refinery Pull Signals"].map((item) => (
+                  <span
+                    key={item}
+                    className="text-[10px] font-mono px-2 py-0.5 rounded"
+                    style={{ background: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.18)", color: "#3b82f6" }}
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+
+              <p className="text-[9px] font-mono tracking-widest mb-2" style={{ color: "var(--muted)" }}>CURRENT STATUS</p>
+              <div className="space-y-1.5 mb-4">
+                {[
+                  "Beta environment — engine scaffolding in progress",
+                  "Displayed values may be illustrative or delayed",
+                  "Assumptions and external data sources still under active validation",
+                ].map((s) => (
+                  <div key={s} className="flex items-start gap-2">
+                    <div className="w-1 h-1 rounded-full shrink-0 mt-1.5" style={{ background: "#3b82f6", opacity: 0.6 }} />
+                    <span className="text-[11px] leading-snug" style={{ color: "var(--muted)" }}>{s}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* GitHub link */}
+            <div className="mt-auto">
+              <a
+                href="https://github.com/AdityaManojMenon/physical-arb-engine"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 px-5 py-3 transition-opacity hover:opacity-75"
+                style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{ color: "#3b82f6", flexShrink: 0 }}>
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+                <span className="text-[11px] font-mono" style={{ color: "#3b82f6" }}>physical-arb-engine</span>
+                <ExternalLink size={10} className="ml-auto shrink-0" style={{ color: "var(--muted)" }} />
+              </a>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -418,6 +1002,64 @@ export default function MethodologyPage() {
         </div>
       </div>
 
+      {/* ── Data Freshness Notice ─────────────────────────────────────────── */}
+      <div className="mb-10">
+        <p className="text-xs font-mono uppercase tracking-widest font-bold mb-5"
+          style={{ color: "var(--muted)", letterSpacing: "0.1em" }}>
+          Data Integrity &amp; Freshness
+        </p>
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+        >
+          {/* Header strip */}
+          <div
+            className="px-5 py-3 flex items-center gap-2"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.015)" }}
+          >
+            <div className="w-1.5 h-1.5 rounded-full pulse-dot" style={{ background: "var(--bull)" }} />
+            <span className="text-xs font-semibold text-white">Data Freshness Notice</span>
+          </div>
+          {/* Two-col status grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px" style={{ background: "rgba(255,255,255,0.04)" }}>
+            {[
+              {
+                label: "LIVE SECTIONS",
+                badge: "LIVE",
+                badgeBg: "rgba(34,197,94,0.1)",
+                badgeBorder: "rgba(34,197,94,0.25)",
+                badgeColor: "#22c55e",
+                dot: "#22c55e",
+                desc: "Updated from current workflows where available. Weekly Brief data, performance metrics, and call logs reflect the most recent available inputs following each EIA release.",
+              },
+              {
+                label: "BETA MODULES",
+                badge: "BETA",
+                badgeBg: "rgba(99,102,241,0.1)",
+                badgeBorder: "rgba(99,102,241,0.25)",
+                badgeColor: "#818cf8",
+                dot: "#818cf8",
+                desc: "Forecast and Arb modules may display placeholder, delayed, or non-production values while pipelines are being validated. Outputs should not be used for live trading decisions.",
+              },
+            ].map(({ label, badge, badgeBg, badgeBorder, badgeColor, dot, desc }) => (
+              <div key={label} className="px-5 py-4" style={{ background: "var(--card)" }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: dot }} />
+                  <span className="text-[9px] font-mono tracking-widest" style={{ color: "var(--muted)" }}>{label}</span>
+                  <span
+                    className="text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded ml-auto"
+                    style={{ background: badgeBg, border: `1px solid ${badgeBorder}`, color: badgeColor }}
+                  >
+                    {badge}
+                  </span>
+                </div>
+                <p className="text-[11px] leading-relaxed" style={{ color: "var(--muted)" }}>{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Failure Modes */}
       <div className="mb-10">
         <p className="text-xs font-mono uppercase tracking-widest font-bold mb-2"
@@ -457,10 +1099,10 @@ export default function MethodologyPage() {
               <GitBranch size={14} style={{ color: "var(--accent)" }} />
             </div>
             <p className="text-xs leading-relaxed self-center" style={{ color: "#9a9a9a" }}>
-              The data ingestion, signal generation, chart production, and brief drafting process is powered
-              by a modular Python research pipeline built for repeatable energy market analysis. Each
-              publication is generated from structured data workflows — not manual headline interpretation.
-              Executed weekly following the EIA WPSR release at 10:30 AM ET.
+              Data ingestion, signal generation, and chart production are powered by a modular Python
+              research pipeline. The pipeline surfaces structured outputs to the author, who interprets
+              signals and manually constructs the final brief. Executed weekly following the EIA WPSR
+              release at 10:30 AM ET.
             </p>
           </div>
 
@@ -538,18 +1180,55 @@ export default function MethodologyPage() {
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <div className="rounded-xl p-5"
-        style={{ background: "rgba(212,146,42,0.04)", border: "1px solid rgba(212,146,42,0.15)" }}>
+      {/* ── Known Limitations ─────────────────────────────────────────────── */}
+      <div className="mb-6">
+        <p className="text-xs font-mono uppercase tracking-widest font-bold mb-5"
+          style={{ color: "var(--muted)", letterSpacing: "0.1em" }}>
+          Known Limitations
+        </p>
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ background: "var(--card)", border: "1px solid var(--border)" }}
+        >
+          {[
+            { text: "Sudden geopolitical shocks can override all quantitative model signals within hours", color: "#ef4444" },
+            { text: "EIA data revisions in subsequent weeks can invalidate signals generated from first-release figures", color: "#f97316" },
+            { text: "Low-liquidity sessions and roll periods distort spread and volatility readings", color: "#eab308" },
+            { text: "Options outputs are simplified for educational and illustrative use — not production-grade pricing", color: "#8b5cf6" },
+            { text: "Beta modules (Forecast, Arb) remain under active development and are not production-validated", color: "#818cf8" },
+          ].map(({ text, color }, i, arr) => (
+            <div
+              key={i}
+              className="flex items-start gap-3.5 px-5 py-3.5 hover:bg-white/[0.015] transition-colors"
+              style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
+            >
+              <div
+                className="w-5 h-5 rounded flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-bold font-mono tabular-nums"
+                style={{ background: `${color}12`, border: `1px solid ${color}28`, color }}
+              >
+                {i + 1}
+              </div>
+              <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>{text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Disclaimer ────────────────────────────────────────────────────── */}
+      <div
+        className="rounded-xl p-5"
+        style={{ background: "rgba(212,146,42,0.04)", border: "1px solid rgba(212,146,42,0.15)" }}
+      >
         <p className="text-xs font-mono uppercase tracking-widest font-bold mb-2"
           style={{ color: "var(--accent)", letterSpacing: "0.1em" }}>
-          Important Note
+          Disclaimer
         </p>
         <p className="text-xs leading-relaxed" style={{ color: "#9a9a9a" }}>
-          This research is informational only and does not constitute investment advice. All analysis
-          reflects the author&apos;s independent views based on publicly available data. Past signal
-          accuracy is not indicative of future results. Known failure modes are documented above — readers
-          should apply independent judgment and risk management.
+          CrudeQ is an independent research platform for{" "}
+          <span className="text-white font-medium">informational and educational purposes only</span>.
+          It does not constitute investment advice or a solicitation to trade. All analysis reflects the
+          author&apos;s independent views based on publicly available data. Past signal accuracy is not
+          indicative of future results. Readers should apply independent judgment and appropriate risk management.
         </p>
       </div>
 

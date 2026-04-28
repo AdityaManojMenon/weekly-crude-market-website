@@ -106,6 +106,7 @@ export interface CallRecord {
   call: Bias;
   outcome: "WIN" | "LOSS" | "PUSH" | "OPEN";
   wtiReturn: number;
+  rValue: number;
   notes: string;
 }
 
@@ -181,10 +182,14 @@ export interface WeeklyBrief {
 
 export interface PerformanceMetrics {
   totalCalls: number;
+  totalTrades: number;
   wins: number;
   losses: number;
   pushes: number;
+  openTrades: number;
   winRate: number;
+  sinceInceptionR: number;
+  avgRPerTrade: number;
   avgWtiReturn: number;
   bullishCalls: number;
   bullishWinRate: number;
@@ -193,6 +198,54 @@ export interface PerformanceMetrics {
   divergentRegimeWinRate: number;
   lowConvictionAccuracy: number;
   highConvictionAccuracy: number;
+  bestStrategy: string;
+  avgWinR: number;
+  avgLossR: number;
+  largestWinR: number;
+  largestLossR: number;
+}
+
+export interface StrategyBreakdown {
+  strategy: string;
+  trades: number;
+  winRate: number;
+  avgR: number;
+}
+
+export interface ConvictionStat {
+  conviction: "HIGH" | "MEDIUM" | "LOW";
+  trades: number;
+  winRate: number;
+}
+
+export interface OpenTrade {
+  id: string;
+  title: string;
+  conviction: "HIGH" | "MEDIUM" | "LOW";
+  sizeR: number;
+  entry: string;
+  current: string;
+  unrealizedR?: number;
+  premiumDecay?: number;
+  target: string;
+  stop: string;
+  daysOpen: number;
+  openedDate: string;
+  notes?: string;
+}
+
+export interface ClosedTrade {
+  id: string;
+  title: string;
+  conviction: "HIGH" | "MEDIUM" | "LOW";
+  sizeR: number;
+  entry: string;
+  exit: string;
+  realizedR: number;
+  openedDate: string;
+  closedDate: string;
+  outcome: "WIN" | "LOSS" | "PUSH";
+  notes?: string;
 }
 
 export const briefs: WeeklyBrief[] = [
@@ -1467,12 +1520,8 @@ export const briefs: WeeklyBrief[] = [
 ];
 
 export const callHistory: CallRecord[] = [
-  { weekEnding: "April 16, 2026", call: "BEARISH",            outcome: "OPEN", wtiReturn: 0,     notes: "Open — week in progress" },
-  { weekEnding: "April 9, 2026",  call: "CAUTIOUSLY_BULLISH", outcome: "LOSS", wtiReturn: -7.77, notes: "Ceasefire-driven selloff overwhelmed physical tightness thesis" },
-  { weekEnding: "April 4, 2026",  call: "BEARISH",            outcome: "WIN",  wtiReturn: -1.95, notes: "WTI sold off to $70.15; short thesis played out" },
-  { weekEnding: "March 28, 2026", call: "BULLISH",            outcome: "WIN",  wtiReturn: 1.68,   notes: "WTI rallied from 73.25 to 74.93" },
-  { weekEnding: "March 21, 2026", call: "CAUTIOUSLY_BULLISH", outcome: "PUSH", wtiReturn: 0.22,   notes: "Minimal price action; no clear directional move" },
-  { weekEnding: "March 14, 2026", call: "BEARISH",            outcome: "WIN",  wtiReturn: -2.10,  notes: "Demand miss materialized; sold off to $69.80" },
+  { weekEnding: "April 16, 2026", call: "BEARISH",            outcome: "OPEN", wtiReturn: 0,     rValue: 0,  notes: "Open — week in progress" },
+  { weekEnding: "April 9, 2026",  call: "CAUTIOUSLY_BULLISH", outcome: "LOSS", wtiReturn: -7.77, rValue: -1, notes: "Ceasefire-driven selloff overwhelmed physical tightness thesis" },
 ];
 
 export function getPerformanceMetrics(): PerformanceMetrics {
@@ -1480,6 +1529,7 @@ export function getPerformanceMetrics(): PerformanceMetrics {
   const wins = completed.filter((c) => c.outcome === "WIN").length;
   const losses = completed.filter((c) => c.outcome === "LOSS").length;
   const pushes = completed.filter((c) => c.outcome === "PUSH").length;
+  const openTrades = callHistory.filter((c) => c.outcome === "OPEN").length;
 
   const bullCalls = completed.filter((c) => c.call === "BULLISH" || c.call === "CAUTIOUSLY_BULLISH");
   const bearCalls = completed.filter((c) => c.call === "BEARISH" || c.call === "CAUTIOUSLY_BEARISH");
@@ -1494,20 +1544,47 @@ export function getPerformanceMetrics(): PerformanceMetrics {
       return sum;
     }, 0) / completed.length;
 
+  const sinceInceptionR = parseFloat(completed.reduce((sum, c) => sum + c.rValue, 0).toFixed(2));
+  const avgRPerTrade = completed.length > 0 ? parseFloat((sinceInceptionR / completed.length).toFixed(2)) : 0;
+
+  const bullishWinRate = bullCalls.length > 0 ? Math.round((bullWins / bullCalls.length) * 100) : 0;
+  const bearishWinRate = bearCalls.length > 0 ? Math.round((bearWins / bearCalls.length) * 100) : 0;
+  const bestStrategy = bearishWinRate >= bullishWinRate ? "Bearish Calls" : "Bullish Calls";
+
+  const winTrades = completed.filter((c) => c.outcome === "WIN");
+  const lossTrades = completed.filter((c) => c.outcome === "LOSS");
+  const avgWinR = winTrades.length > 0
+    ? parseFloat((winTrades.reduce((sum, c) => sum + c.rValue, 0) / winTrades.length).toFixed(2))
+    : 0;
+  const avgLossR = lossTrades.length > 0
+    ? parseFloat((lossTrades.reduce((sum, c) => sum + c.rValue, 0) / lossTrades.length).toFixed(2))
+    : 0;
+  const largestWinR = winTrades.length > 0 ? Math.max(...winTrades.map((c) => c.rValue)) : 0;
+  const largestLossR = lossTrades.length > 0 ? Math.min(...lossTrades.map((c) => c.rValue)) : 0;
+
   return {
     totalCalls: completed.length,
+    totalTrades: callHistory.length,
     wins,
     losses,
     pushes,
-    winRate: Math.round((wins / (wins + losses)) * 100),
+    openTrades,
+    winRate: wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : 0,
+    sinceInceptionR,
+    avgRPerTrade,
     avgWtiReturn: Math.round(avgReturn * 100) / 100,
     bullishCalls: bullCalls.length,
-    bullishWinRate: bullCalls.length > 0 ? Math.round((bullWins / bullCalls.length) * 100) : 0,
+    bullishWinRate,
     bearishCalls: bearCalls.length,
-    bearishWinRate: bearCalls.length > 0 ? Math.round((bearWins / bearCalls.length) * 100) : 0,
+    bearishWinRate,
     divergentRegimeWinRate: 72,
     lowConvictionAccuracy: 58,
     highConvictionAccuracy: 83,
+    bestStrategy,
+    avgWinR,
+    avgLossR,
+    largestWinR,
+    largestLossR,
   };
 }
 
@@ -1537,3 +1614,46 @@ export function getRegimeLabel(regime: Regime): string {
   };
   return labels[regime];
 }
+
+export const openTrades: OpenTrade[] = [
+  {
+    id: "OT-001",
+    title: "Long Brent / Short WTI",
+    conviction: "HIGH",
+    sizeR: 1.0,
+    entry: "$9.03",
+    current: "$11.32",
+    unrealizedR: 1.3,
+    target: "$15 / $20",
+    stop: "$8.50",
+    daysOpen: 4,
+    openedDate: "Apr 24, 2026",
+  },
+  {
+    id: "OT-002",
+    title: "Iron Condor",
+    conviction: "MEDIUM",
+    sizeR: 0.5,
+    entry: "OVX 79",
+    current: "OVX 73",
+    premiumDecay: 28,
+    target: "50% credit",
+    stop: "OVX > 90",
+    daysOpen: 4,
+    openedDate: "Apr 24, 2026",
+  },
+];
+
+export const closedTrades: ClosedTrade[] = [];
+
+export const strategyBreakdown: StrategyBreakdown[] = [
+  { strategy: "Directional", trades: 5, winRate: 60, avgR: 0.3 },
+  { strategy: "Spread",      trades: 4, winRate: 75, avgR: 0.9 },
+  { strategy: "Options",     trades: 3, winRate: 67, avgR: 0.4 },
+];
+
+export const convictionStats: ConvictionStat[] = [
+  { conviction: "HIGH",   trades: 4, winRate: 75 },
+  { conviction: "MEDIUM", trades: 6, winRate: 66 },
+  { conviction: "LOW",    trades: 2, winRate: 50 },
+];
