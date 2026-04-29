@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import TickerTapeClient from "@/components/TickerTapeClient";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WTI Crude Market Intelligence",
-  description: "Weekly EIA WPSR analysis, signal framework, and directional trade outlook",
+  title: "CrudeQ — Crude Market Intelligence",
+  description: "Weekly analyst-style crude oil briefs powered by EIA data, futures structure, volatility, and positioning.",
 };
 
 export default function RootLayout({
@@ -26,12 +24,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ background: "var(--background)" }}>
-        <Navbar />
-        <div className="pt-14">
-          <TickerTapeClient />
-          <main>{children}</main>
-        </div>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        style={{ background: "var(--background)" }}
+      >
+        {children}
       </body>
     </html>
   );
