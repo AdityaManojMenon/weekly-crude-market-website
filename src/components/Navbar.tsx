@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 
 const nav = [
   { label: "BRIEF", href: "/brief", beta: false },
+  { label: "EQUITIES", href: "/equities", beta: true },
   { label: "ARB", href: "/arb", beta: true },
   { label: "FORECAST", href: "/forecast", beta: true },
   { label: "ARCHIVE", href: "/archive", beta: false },
-  { label: "PERFORMANCE", href: "/performance", beta: true },
+  { label: "PERFORMANCE", href: "/performance", beta: false },
   { label: "METHODOLOGY", href: "/methodology", beta: false },
   { label: "CONTACT", href: "/contact", beta: false },
 ];
@@ -60,9 +61,6 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-4">
-          <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>
-            EIA WPSR TRACKER
-          </span>
         </div>
       </div>
     </header>
