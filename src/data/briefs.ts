@@ -386,12 +386,12 @@ export const briefs: WeeklyBrief[] = [
     },
     tradeIdeas: [
       {
-        structure: "Long Brent / Short WTI Relative Value",
+        structure: "Short Brent / Long WTI Relative Value",
         conviction: "HIGH",
-        rationale: "The Brent-WTI spread at $9.03 has broken decisively above the $5.57 3M average and has since expanded to $11.32, confirming that this is no longer a simple mean-reversion dislocation. The move reflects a structurally tighter seaborne market driven by sanctions enforcement, tanker-flow disruption, and persistent Gulf shipping risk, while the bearish U.S. crude inventory backdrop continues to pressure WTI. With Brent pricing global scarcity and WTI anchored by softer domestic balances, relative strength still favors Brent over WTI. Momentum and fundamentals remain aligned, though headline risk requires active risk management.",
-        entry: "Current setup active: $9.03 · Spread now $11.32 — hold core, add selectively on pullbacks",
-        target: "$15.00 base case · $20.00 escalation if Gulf exports fail to normalize by June",
-        stop: "< $8.50 daily close (raised from $7.50 to protect gains after breakout above $11)",
+        rationale: "The Brent–WTI spread widened to ~$9–11 (vs ~$5.5 avg), driven by a geopolitical premium in Brent and temporary WTI weakness from a crude build. However, this dislocation was inconsistent with physical signals: strong product demand, elevated crack spreads (~$50+), and a tight front-end curve (CL1–CL2 ~5) supported WTI. Meanwhile, Brent was pricing hypothetical geopolitical risk without confirmed disruption. With no escalation, the premium looked overstretched, creating asymmetry toward compression and WTI outperformance.",
+        entry: "Spread ≥ $9–11 (dislocation) → Long WTI / Short Brent · Add > $11.5 (overshoot)",
+        target: "Base case: $7.00–8.00 (initial normalization) · Full mean reversion: $5.50–6.00 (3M average)",
+        stop: "> $13.50–14.00 spread (daily close)",
       },
       {
         structure: 'The "Hormuz Deadlock" Iron Condor',
