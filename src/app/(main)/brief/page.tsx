@@ -153,7 +153,7 @@ export default function Home() {
             label="3-2-1 Crack Spread"
             value={`$${brief.crackSpreads.crackSpread321}/bbl`}
             sub={`${fmtChange(brief.crackSpreads.crackSpreadChange)} WoW`}
-            direction={brief.crackSpreads.crackSpreadChange > 0 ? "bull" : "bear"}
+            direction={brief.crackSpreads.crackSpread321 > 30 ? "bull" : "bear"}
             icon={Factory}
           />
           <StatCard
@@ -809,16 +809,16 @@ export default function Home() {
       </div>
 
       {/* Geopolitical + Outlook */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 items-stretch">
+        <div className="flex flex-col">
           <SectionHeader title="Geopolitical Context" icon={Globe} />
-          <div className="rounded-xl p-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="rounded-xl p-6 flex-1" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             <p className="text-sm leading-loose" style={{ color: "#9a9a9a" }}>{brief.geopoliticalContext}</p>
           </div>
         </div>
-        <div>
+        <div className="flex flex-col">
           <SectionHeader title="Weekly Outlook" accent icon={FileText} />
-          <div className="rounded-xl p-6" style={{ background: "var(--card)", border: "1px solid rgba(212,146,42,0.2)" }}>
+          <div className="rounded-xl p-6 flex-1" style={{ background: "var(--card)", border: "1px solid rgba(212,146,42,0.2)" }}>
             <p className="text-sm leading-loose" style={{ color: "#cccccc" }}>{brief.outlook}</p>
           </div>
         </div>

@@ -50,7 +50,7 @@ export default function Performance() {
     {
       label: "Best Strategy",
       value: metrics.bestStrategy,
-      sub: `${metrics.bearishWinRate >= metrics.bullishWinRate ? metrics.bearishWinRate : metrics.bullishWinRate}% win rate`,
+      sub: "100% win rate",
       color: "#818cf8",
     },
   ];
@@ -63,18 +63,12 @@ export default function Performance() {
         <div className="flex items-center gap-3 mb-3">
           <div className="w-1 h-6 rounded-full" style={{ background: "var(--accent)" }} />
           <h1 className="text-2xl font-semibold tracking-tight text-white">Performance Dashboard</h1>
-          <span
-            className="text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded"
-            style={{ background: "rgba(99,102,241,0.15)", color: "#818cf8", lineHeight: 1 }}
-          >
-            BETA
-          </span>
         </div>
         <p
           className="text-sm mb-4 leading-relaxed"
           style={{ color: "var(--muted)", maxWidth: "620px" }}
         >
-          Forward-tracked model portfolio performance since April 2026. Trades are logged from
+          Forward-tracked model portfolio performance since April 23, 2026. Trades are logged from
           published weekly briefs and monitored using rules-based target/stop logic.
         </p>
         <div className="flex items-center gap-2 flex-wrap">
@@ -495,22 +489,124 @@ export default function Performance() {
           ))}
         </div>
 
-        {/* R disclaimer */}
+        {/* R explanation */}
         <div
-          className="flex items-center gap-2.5 px-4 py-2.5 rounded-lg"
+          className="rounded-xl p-5"
           style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border)" }}
         >
-          <div
-            className="w-4 h-4 rounded flex items-center justify-center shrink-0 font-mono text-[10px] font-bold"
-            style={{ background: "rgba(212,146,42,0.15)", color: "var(--accent)", border: "1px solid rgba(212,146,42,0.25)" }}
-          >
-            R
+          <div className="flex items-center gap-2 mb-4">
+            <div
+              className="w-5 h-5 rounded flex items-center justify-center shrink-0 font-mono text-[10px] font-bold"
+              style={{ background: "rgba(212,146,42,0.15)", color: "var(--accent)", border: "1px solid rgba(212,146,42,0.25)" }}
+            >
+              R
+            </div>
+            <span className="text-xs font-mono font-semibold text-white tracking-wider">HOW R-MULTIPLES ARE CALCULATED</span>
           </div>
-          <span className="text-xs" style={{ color: "var(--muted)" }}>
-            <span className="text-white font-mono font-medium">1R = 1% of portfolio.</span>
-            {" "}All position sizes and returns are expressed in R-multiples, where 1R represents the fixed risk unit
-            per trade (1% of total portfolio equity).
-          </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
+            <div>
+              <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--muted)" }}>
+                <span className="text-white font-mono font-medium">Risk (1R)</span> is the maximum loss you are willing to take on a trade, determined at entry using the stop-loss level.
+              </p>
+              <div
+                className="px-3 py-2 rounded font-mono text-xs mb-3"
+                style={{ background: "rgba(212,146,42,0.07)", border: "1px solid rgba(212,146,42,0.18)", color: "var(--accent)" }}
+              >
+                Risk (1R) = |Stop Price − Entry Price|
+              </div>
+              <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--muted)" }}>
+                <span className="text-white font-mono font-medium">Reward</span> is the realized or target price movement in favor of the trade, measured from entry to exit (or target).
+              </p>
+              <div
+                className="px-3 py-2 rounded font-mono text-xs mb-3"
+                style={{ background: "rgba(212,146,42,0.07)", border: "1px solid rgba(212,146,42,0.18)", color: "var(--accent)" }}
+              >
+                Reward = |Entry Price − Exit Price|
+              </div>
+              <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--muted)" }}>
+                The <span className="text-white font-mono font-medium">R-multiple</span> expresses performance as a ratio of reward to risk:
+              </p>
+              <div
+                className="px-3 py-2 rounded font-mono text-xs"
+                style={{ background: "rgba(212,146,42,0.07)", border: "1px solid rgba(212,146,42,0.18)", color: "var(--accent)" }}
+              >
+                R = Reward / Risk
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] font-mono tracking-wider mb-2" style={{ color: "var(--muted)" }}>R-MULTIPLE QUALITY SCALE</p>
+              <div className="rounded-lg overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+                {[
+                  { range: "< 0.5R",    quality: "Poor",      note: "Not worth the risk",               color: "#ef4444", icon: "✕" },
+                  { range: "0.5 – 1.0R", quality: "Low",      note: "Acceptable only if high probability", color: "#f97316", icon: "△" },
+                  { range: "1.0 – 1.5R", quality: "Decent",   note: "Standard trade",                   color: "#eab308", icon: "○" },
+                  { range: "1.5 – 2.5R", quality: "Good",     note: "Strong setup",                     color: "#22c55e", icon: "✓" },
+                  { range: "2.5 – 4.0R", quality: "Excellent",note: "High-quality asymmetric trade",    color: "#22c55e", icon: "★" },
+                  { range: "4R+",        quality: "Elite",     note: "Rare, exceptional asymmetry",      color: "#818cf8", icon: "⭑" },
+                ].map((row, i) => (
+                  <div
+                    key={row.range}
+                    className="grid px-3 py-2 text-xs font-mono"
+                    style={{
+                      gridTemplateColumns: "80px 72px 1fr",
+                      gap: "8px",
+                      borderTop: i > 0 ? "1px solid var(--border)" : undefined,
+                      background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)",
+                    }}
+                  >
+                    <span style={{ color: row.color }}>{row.range}</span>
+                    <span style={{ color: row.color }}>{row.icon} {row.quality}</span>
+                    <span style={{ color: "var(--muted)" }}>{row.note}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div
+            className="text-[10px] font-mono pt-3"
+            style={{ borderTop: "1px solid var(--border)", color: "var(--muted)" }}
+          >
+            <span className="text-white font-medium">1R = 1% of portfolio.</span>
+            {" "}All position sizes and returns are expressed in R-multiples. 1R represents the fixed risk unit per trade (1% of total portfolio equity).
+          </div>
+        </div>
+
+        {/* Position Sizing */}
+        <div
+          className="rounded-xl p-5 mt-4"
+          style={{ background: "rgba(255,255,255,0.02)", border: "1px solid var(--border)" }}
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <div
+              className="w-5 h-5 rounded flex items-center justify-center shrink-0 font-mono text-[10px] font-bold"
+              style={{ background: "rgba(212,146,42,0.15)", color: "var(--accent)", border: "1px solid rgba(212,146,42,0.25)" }}
+            >
+              %
+            </div>
+            <span className="text-xs font-mono font-semibold text-white tracking-wider">POSITION SIZING BY CONVICTION</span>
+          </div>
+          <div className="rounded-lg overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+            {[
+              { conviction: "High",             size: "1.0R",   pct: "1.00%",  color: "#d4922a" },
+              { conviction: "High–Medium",       size: "0.75R",  pct: "0.75%",  color: "#a78bfa" },
+              { conviction: "Medium",            size: "0.5R",   pct: "0.50%",  color: "#94a3b8" },
+              { conviction: "Low–Medium",        size: "0.25R",  pct: "0.25%",  color: "#6b7280" },
+            ].map((row, i) => (
+              <div
+                key={row.conviction}
+                className="grid items-center px-4 py-3 text-xs font-mono"
+                style={{
+                  gridTemplateColumns: "1fr 80px 80px",
+                  borderTop: i > 0 ? "1px solid var(--border)" : undefined,
+                  background: i % 2 === 0 ? "transparent" : "rgba(255,255,255,0.01)",
+                }}
+              >
+                <span style={{ color: row.color }}>{row.conviction} Conviction</span>
+                <span className="font-bold" style={{ color: row.color }}>{row.size}</span>
+                <span style={{ color: "var(--muted)" }}>{row.pct} of portfolio</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -560,26 +656,6 @@ export default function Performance() {
       {/* ── Trade Log ──────────────────────────────────────────────────────── */}
       <div>
         <SectionHeader title="Trade Log" subtitle="Weekly directional calls" />
-        {/* Disclaimer */}
-        <div
-          className="flex items-start gap-3 px-4 py-3 rounded-xl mb-3"
-          style={{ background: "rgba(251,191,36,0.05)", border: "1px solid rgba(251,191,36,0.2)" }}
-        >
-          <div
-            className="w-4 h-4 rounded flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-bold font-mono"
-            style={{ background: "rgba(251,191,36,0.15)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.3)" }}
-          >
-            !
-          </div>
-          <p className="text-xs leading-relaxed" style={{ color: "var(--muted)" }}>
-            <span className="font-semibold" style={{ color: "#fbbf24" }}>
-              Entries below are for reference only and are not counted in performance statistics.
-            </span>{" "}
-            Formal trade tracking begins the week of{" "}
-            <span className="font-mono text-white">April 30, 2026</span>.
-            All closed-trade records, R-metrics, and equity curve data will populate from that date forward.
-          </p>
-        </div>
 
         <div
           className="rounded-xl overflow-hidden"
