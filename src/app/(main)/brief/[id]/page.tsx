@@ -639,9 +639,9 @@ export default async function BriefPage({ params }: Props) {
           </div>
         </div>
 
-        <div>
+        <div className="flex flex-col h-full">
           <SectionHeader title="Scenario Analysis" icon={Layers} />
-          <div className="rounded-xl overflow-hidden" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+          <div className="rounded-xl overflow-hidden flex-1" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
             {brief.scenarios.map((scenario, i) => {
               const symMap: Record<string, string> = { bull: "▲", bear: "▼", neutral: "⚖" };
               const labelMap: Record<string, string> = { bull: "Bullish Case", bear: "Bearish Case", neutral: "Base Case" };
