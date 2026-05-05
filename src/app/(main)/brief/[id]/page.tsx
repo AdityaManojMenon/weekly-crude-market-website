@@ -114,6 +114,18 @@ export default async function BriefPage({ params }: Props) {
         </div>
       )}
 
+      {/* Post-Publish Update Note */}
+      {brief.updateNote && (
+        <div className="rounded-xl p-5 mb-8 flex items-start gap-4"
+          style={{ background: "rgba(59,130,246,0.05)", border: "1px solid rgba(59,130,246,0.22)" }}>
+          <AlertTriangle size={16} className="shrink-0 mt-0.5" style={{ color: "#60a5fa" }} />
+          <div>
+            <div className="text-xs font-mono font-bold tracking-widest mb-2" style={{ color: "#60a5fa" }}>POST-PUBLISH UPDATE</div>
+            <p className="text-sm leading-relaxed" style={{ color: "#93c5fd" }}>{brief.updateNote}</p>
+          </div>
+        </div>
+      )}
+
       {/* Executive Summary */}
       <div className="mb-8">
         <SectionHeader title="Executive Summary" accent icon={FileText} />
@@ -617,7 +629,15 @@ export default async function BriefPage({ params }: Props) {
               return (
                 <div key={i} className={`rounded-xl p-5${isLastIdea ? " flex-1" : ""}`} style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
                   <div className="flex items-start justify-between gap-3 mb-3">
-                    <span className="text-sm font-bold text-white leading-snug">{idea.structure}</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-bold text-white leading-snug">{idea.structure}</span>
+                      {idea.updated && (
+                        <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded tracking-widest shrink-0"
+                          style={{ background: "rgba(59,130,246,0.12)", color: "#60a5fa", border: "1px solid rgba(59,130,246,0.25)" }}>
+                          UPDATED
+                        </span>
+                      )}
+                    </div>
                     <span className="text-xs font-mono px-2 py-1 rounded shrink-0" style={{ background: cs.bg, color: cs.color, border: `1px solid ${cs.border}` }}>{idea.conviction} CONVICTION</span>
                   </div>
                   <p className="text-xs leading-relaxed mb-4" style={{ color: "#9a9a9a" }}>{idea.rationale}</p>

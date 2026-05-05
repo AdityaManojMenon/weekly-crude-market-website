@@ -90,6 +90,7 @@ export interface TradeIdea {
   target: string;
   stop: string;
   conviction: "HIGH" | "MEDIUM" | "LOW";
+  updated?: boolean;
 }
 
 export interface Scenario {
@@ -164,6 +165,7 @@ export interface WeeklyBrief {
   divergenceFlag: boolean;
   divergenceNote?: string;
   biasNote?: string;
+  updateNote?: string;
   crossAsset: CrossAssetSignal[];
   crossAssetNote: string;
   positioning: PositioningRead;
@@ -257,6 +259,7 @@ export const briefs: WeeklyBrief[] = [
     reportWeek: "Week of April 24–30, 2026",
     bias: "CAUTIOUSLY_BULLISH",
     biasNote: "Escalation Regime — Re-escalation",
+    updateNote: "Update (May 4): Since publication, the market has transitioned from a ceasefire-driven normalization regime into active geopolitical escalation following renewed disruptions in the Strait of Hormuz. The prior assumption of capped upside is no longer valid, with risk premium re-expanding and upside tail risk dominating near-term price action. Bias updated to Neutral–Bullish (Escalation Regime). None of the previously outlined trades were executed due to a lack of optimal entry conditions and an evolving geopolitical backdrop. Price action did not offer favorable risk-reward at the proposed levels, and the subsequent shift from a ceasefire normalization regime to active escalation invalidated the original trade framework before triggers were met.",
     regime: "TRANSITIONAL",
     headline: "WTI Surges 8.9% on Historic Inventory Sweep as Brent-WTI Spread Collapses $5.47 — Ceasefire Normalization Now Caps Upside",
     executiveSummary:
@@ -387,6 +390,7 @@ export const briefs: WeeklyBrief[] = [
       {
         structure: "WTI Long Strangle",
         conviction: "HIGH",
+        updated: true,
         rationale: "Iran has issued direct threats of retaliation against the US and Gulf allies — specifically the UAE — following escalating pressure on its nuclear program. The UAE, home to the Fujairah oil terminal and a critical Hormuz transshipment hub, is a high-value target whose disruption would send WTI sharply higher. Conversely, a surprise ceasefire or diplomatic breakthrough would rapidly collapse the embedded risk premium toward the $96–100 fundamental anchor. In either scenario the move is large and decisive — direction is the uncertainty, not magnitude. A long strangle is structurally optimal: OVX remains elevated with event risk still building, so IV has not yet peaked. The 110–112 calls exploit the breakout zone; the 98–100 puts sit at the OPEC+ physical support floor. Max loss is defined at premium paid.",
         entry: "Enter now · Buy Call 110–112 + Buy Put 98–100 · Expiry: 30–45 DTE · Size: 1R (max loss = premium paid)",
         target: "+50% to +120% of premium paid · Scale out in two tranches: 60% at +50%, runner to +120% if directional move accelerates",
@@ -395,6 +399,7 @@ export const briefs: WeeklyBrief[] = [
       {
         structure: "Buy WTI on Panic Pullback",
         conviction: "MEDIUM",
+        updated: true,
         rationale: "Physical fundamentals remain tight regardless of geopolitical swings — inventory draws are running well above seasonal norms and OPEC+ has consistently defended the $95–100 floor. A ceasefire headline could spark a sharp 'sell the peace' selloff, but the underlying supply risk doesn't disappear: Iranian nuclear tension, Gulf infrastructure vulnerability, and US-Iran posturing stay structurally unresolved. The $98–100 zone is where dip buyers, OPEC+ verbal intervention risk, and physical tightness converge. This is a reactive, opportunistic trade sized at 0.75R — not a core position — entered only if the market gifts the level.",
         entry: "ONLY on pullback to $98–100 zone · Do not chase above $103 · Instrument: MCL or CL depending on account size",
         target: "T1: $108 (primary target — 60% of position) · T2: $115 (runner if escalation resumes — 40%)",
