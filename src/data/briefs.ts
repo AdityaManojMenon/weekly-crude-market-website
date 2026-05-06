@@ -1965,7 +1965,34 @@ export function getRegimeLabel(regime: Regime): string {
   return labels[regime];
 }
 
-export const openTrades: OpenTrade[] = [];
+export const openTrades: OpenTrade[] = [
+  {
+    id: "OT-001",
+    title: "Long WTI Tactical Pullback (Core Position)",
+    conviction: "MEDIUM",
+    sizeR: 0.75,
+    entry: "Long 3 MCL @ $96.00",
+    current: "—",
+    target: "$105.00",
+    stop: "$92.00",
+    daysOpen: 1,
+    openedDate: "May 5, 2026",
+    notes: "Tactical long positioned for stabilization and rebound following geopolitical-driven volatility. Entry taken near pullback support with tight invalidation below 92. Designed as the high-probability core position.",
+  },
+  {
+    id: "OT-002",
+    title: "Long WTI Escalation Runner",
+    conviction: "MEDIUM",
+    sizeR: 0.25,
+    entry: "Long 1 MCL @ $96.00",
+    current: "—",
+    target: "$110.00",
+    stop: "$90.00",
+    daysOpen: 1,
+    openedDate: "May 5, 2026",
+    notes: "Escalation runner sized small — holds for a larger move if geopolitical risk accelerates toward $110+. Wider stop accommodates higher volatility.",
+  },
+];
 
 export const closedTrades: ClosedTrade[] = [
   {

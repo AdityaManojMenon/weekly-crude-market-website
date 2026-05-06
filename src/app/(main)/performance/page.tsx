@@ -43,7 +43,7 @@ export default function Performance() {
     },
     {
       label: "Open Trades",
-      value: String(metrics.openTrades),
+      value: String(openTrades.length),
       sub: "Currently tracked",
       color: "var(--accent)",
     },
