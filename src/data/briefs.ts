@@ -2430,6 +2430,7 @@ export function getBiasColor(bias: Bias): "bull" | "bear" | "neutral" {
   return "neutral";
 }
 
+
 export function getRegimeLabel(regime: Regime): string {
   const labels: Record<Regime, string> = {
     TIGHTENING: "TIGHTENING",
