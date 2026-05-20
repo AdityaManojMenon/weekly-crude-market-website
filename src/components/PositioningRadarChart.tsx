@@ -192,7 +192,6 @@ export default function PositioningRadarChart({ scores }: Props) {
       {/* ── Chart ── */}
       <div style={{ flex: 1, minHeight: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
-          {/* @ts-expect-error outerRadius accepted at runtime */}
           <RadarChart data={data} outerRadius="72%" margin={{ top: 36, right: 52, bottom: 36, left: 52 }}>
             <defs>
               <filter id="greenGlow" x="-20%" y="-20%" width="140%" height="140%">
@@ -206,7 +205,7 @@ export default function PositioningRadarChart({ scores }: Props) {
 
             {/* 4 concentric reference rings at 25/50/75/100% */}
             <PolarGrid
-              gridCount={4}
+              {...({ gridCount: 4 } as object)}
               stroke="#161616"
               strokeWidth={1}
               gridType="polygon"
@@ -239,7 +238,6 @@ export default function PositioningRadarChart({ scores }: Props) {
               strokeWidth={9}
               fill="transparent"
               dot={false}
-              // @ts-expect-error filter prop accepted by SVG element at runtime
               filter="url(#greenGlow)"
             />
 
@@ -252,7 +250,6 @@ export default function PositioningRadarChart({ scores }: Props) {
               fill="#00ff88"
               fillOpacity={0.1}
               dot={false}
-              // @ts-expect-error label prop accepted at runtime
               label={<ScoreLabels />}
             />
           </RadarChart>
