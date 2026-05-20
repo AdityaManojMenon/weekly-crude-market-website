@@ -48,7 +48,9 @@ interface EquityCurveProps {
 }
 
 export function EquityCurveChart({ callHistory }: EquityCurveProps) {
-  const completed = [...callHistory].reverse().filter((c) => c.outcome !== "OPEN");
+  const completed = [...callHistory]
+    .filter((c) => c.outcome !== "OPEN")
+    .sort((a, b) => new Date(a.weekEnding).getTime() - new Date(b.weekEnding).getTime());
 
   const equityData = completed.reduce(
     (acc, c) => {

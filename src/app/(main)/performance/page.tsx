@@ -254,7 +254,24 @@ export default function Performance() {
 
       {/* ── Trade History ───────────────────────────────────────────────────── */}
       <div className="mb-8">
-        <SectionHeader title="Trade History" subtitle="Closed positions" />
+        <div className="flex items-center justify-between mb-1">
+          <SectionHeader title="Trade History" subtitle="Closed positions" />
+        </div>
+        {/* ThinkorSwim verification note */}
+        <div
+          className="flex items-center gap-2.5 rounded-lg px-4 py-2.5 mb-5"
+          style={{ background: "rgba(74,158,255,0.06)", border: "1px solid rgba(74,158,255,0.18)" }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+            <circle cx="7" cy="7" r="6.5" stroke="#4A9EFF" strokeOpacity="0.6" />
+            <path d="M7 4v3.5M7 9.5v.5" stroke="#4A9EFF" strokeWidth="1.2" strokeLinecap="round" />
+          </svg>
+          <span className="text-xs font-mono" style={{ color: "#6aacff", letterSpacing: "0.02em" }}>
+            All trades executed and verified on{" "}
+            <span className="font-semibold" style={{ color: "#4A9EFF" }}>thinkorswim</span>
+            {" "}— platform trade confirmations serve as proof of execution.
+          </span>
+        </div>
         {closedTrades.length === 0 ? (
           <div
             className="rounded-xl p-6"

@@ -7,6 +7,9 @@ import CotNetLengthChartWrapper from "@/components/CotNetLengthChartWrapper";
 import VolatilityChartsWrapper from "@/components/VolatilityChartsWrapper";
 import RiskDashboardComponent from "@/components/RiskDashboard";
 import CatalystCalendar from "@/components/CatalystCalendar";
+import PositioningRadarChartWrapper from "@/components/PositioningRadarChartWrapper";
+import PositioningCOTChartWrapper from "@/components/PositioningCOTChartWrapper";
+import MacroDualAxisChartWrapper from "@/components/MacroDualAxisChartWrapper";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -130,7 +133,11 @@ export default async function BriefPage({ params }: Props) {
       <div className="mb-8">
         <SectionHeader title="Executive Summary" accent icon={FileText} />
         <div className="rounded-xl p-6" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-          <p className="text-sm leading-loose" style={{ color: "#cccccc" }}>{brief.executiveSummary}</p>
+          <div className="text-sm leading-loose space-y-3" style={{ color: "#cccccc" }}>
+            {brief.executiveSummary.split("\n\n").map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -197,7 +204,7 @@ export default async function BriefPage({ params }: Props) {
         </div>
 
         {/* Positioning Dashboard */}
-        <div className="rounded-xl p-5" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
+        <div className="rounded-xl p-5 flex flex-col h-full" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
           <div className="flex items-center gap-2 mb-4">
             <Target size={13} style={{ color: "var(--accent)" }} />
             <span className="text-xs font-mono tracking-widest uppercase" style={{ color: "var(--muted)" }}>Positioning Read</span>
@@ -235,6 +242,13 @@ export default async function BriefPage({ params }: Props) {
               {brief.positioning.interpretation}
             </p>
           </div>
+          {brief.positioning.radarScores && (
+            <div className="mt-4 flex flex-col flex-1 min-h-0">
+              <div className="flex-1 min-h-[320px]">
+                <PositioningRadarChartWrapper scores={brief.positioning.radarScores} />
+              </div>
+            </div>
+          )}
         </div>
 
       </div>
@@ -381,6 +395,55 @@ export default async function BriefPage({ params }: Props) {
         </div>
 
       </div>
+
+      {/* Macro Dual-Axis Charts: WTI vs Real Yield & WTI vs 5Y Breakeven */}
+      {brief.macroSeries && brief.macroSeries.length > 0 && (() => {
+        const ms = brief.macroSeries!;
+        const last = ms[ms.length - 1];
+        const crossAssetSignals = brief.crossAsset ?? [];
+        const realYieldSignal = crossAssetSignals.find((s) => s.label === "10Y Real Yield");
+        const breakevenSignal = crossAssetSignals.find((s) => s.label === "5Y Breakeven");
+        return (
+          <div style={{ marginBottom: 20 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 12,
+              }}
+            >
+              <MacroDualAxisChartWrapper
+                data={ms}
+                indicator="realYield"
+                indicatorColor="#F5A623"
+                indicatorDashed={false}
+                indicatorLabel="10Y Real Yield"
+                currentWti={last.wti}
+                currentIndicator={last.realYield}
+                indicatorUnit="%"
+                interpretation={
+                  realYieldSignal?.readthrough ??
+                  "Real yields rising = commodity headwind. WTI falling in line — macro and geopolitical narratives aligned bearish this week."
+                }
+              />
+              <MacroDualAxisChartWrapper
+                data={ms}
+                indicator="breakeven"
+                indicatorColor="#4A9EFF"
+                indicatorDashed={true}
+                indicatorLabel="5Y Breakeven"
+                currentWti={last.wti}
+                currentIndicator={last.breakeven}
+                indicatorUnit="%"
+                interpretation={
+                  breakevenSignal?.readthrough ??
+                  "Falling breakevens alongside crude weakness — bond market pricing disinflation. Bearish commodity complex signal."
+                }
+              />
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Volatility Monitor */}
       {brief.volatility && (() => {

@@ -32,6 +32,13 @@ export interface OvxDataPoint {
   wti: number;    // WTI front-month price
 }
 
+export interface MacroDataPoint {
+  date: string;      // "YYYY-MM-DD"
+  wti: number;
+  realYield: number; // FRED DFII10 — 10Y Real Yield (%)
+  breakeven: number; // FRED T5YIE — 5Y Breakeven Inflation (%)
+}
+
 export type VolRegime = "CALM" | "ELEVATED" | "STRESSED" | "PANIC" | "PANIC_REVERSING";
 
 export interface VolatilityData {
@@ -58,6 +65,8 @@ export interface CotPositioning {
   signal: CotSignal;
   interpretation: string;
   chartData: CotDataPoint[];
+  p25?: number;   // 52-week P25 net length (in thousands)
+  p75?: number;   // 52-week P75 net length (in thousands)
 }
 
 export interface CrackSpreads {
@@ -128,12 +137,26 @@ export interface CrossAssetSignal {
   readthrough: string;
 }
 
+export interface RadarScores {
+  momentum: number;        // 0–10
+  fundamentals: number;
+  volatility: number;
+  riskReward: number;
+  prior?: {
+    momentum: number;
+    fundamentals: number;
+    volatility: number;
+    riskReward: number;
+  };
+}
+
 export interface PositioningRead {
   momentum: "BULLISH" | "BEARISH" | "NEUTRAL" | "MIXED";
   fundamentals: "BULLISH" | "BEARISH" | "NEUTRAL" | "MIXED";
   volatility: "HIGH" | "MEDIUM" | "LOW";
   riskReward: "FAVORABLE" | "UNFAVORABLE" | "MIXED";
   interpretation: string;
+  radarScores?: RadarScores;
 }
 
 export interface RiskDashboard {
@@ -180,6 +203,7 @@ export interface WeeklyBrief {
   wtiWeeklyChange: number;
   cotPositioning?: CotPositioning;
   volatility?: VolatilityData;
+  macroSeries?: MacroDataPoint[];
 }
 
 export interface PerformanceMetrics {
@@ -251,6 +275,455 @@ export interface ClosedTrade {
 }
 
 export const briefs: WeeklyBrief[] = [
+  {
+    id: "2026-05-08",
+    weekEnding: "May 8, 2026",
+    publishedDate: "May 8, 2026",
+    eiaReleaseDate: "May 8, 2026",
+    reportWeek: "Week of May 2–8, 2026",
+    bias: "CAUTIOUSLY_BULLISH",
+    biasNote: "Re-escalation Regime — Iran-US Tensions",
+    regime: "TRANSITIONAL",
+    headline: "WTI Slides 6.4% to $95.42 as Presidential Rhetoric Deflates Value — Massive Bullish EIA Sweep Artificially Overridden by Geopolitics",
+    executiveSummary:
+      "WTI tumbled -$6.52 (-6.40%) to $95.42, driven lower by high-profile presidential jawboning rather than structural loosening. This political intervention forced a sharp fundamental-geopolitical divergence: the paper market completely decoupled from an unambiguously bullish EIA print to price in an artificial policy discount, leaving WTI heavily undervalued against tight physical realities.\n\nMassive Physical Draws: Prompt indicators signal a severely constricted market. Crude drew down -4.31 MMbbl (vs. -0.07 MMbbl seasonal norm), gasoline shed -4.08 MMbbl alongside surging 3-2-1 crack spreads (+$3.94 to $57.92/bbl), and Cushing tightened by -1.70 MMbbl.\n\nPaper Market De-risking: Political headlines triggered systematic position cleanup over structural shifts. Managed money net longs shed -9,540 contracts WoW to +70,791 (53.8th percentile), indicating proactive de-risking.\n\nVolatility Mispricing: The Brent-WTI spread compressed slightly to $5.87. While the oil VIX (OVX) eased to 72.2 (82nd percentile), 20-day realized volatility (78.3%) outpaced implied by 6.1 points, leaving options structurally cheap relative to physical moves.\n\nTactical Outlook: Strong equities (+2.33%) and tight credit spreads (26th percentile) confirm this is a verbal selloff, not macro demand destruction. At $95.42, WTI sits deep in a discount zone ripe for physical buyer re-engagement. Active longs from $96 are underwater; the $92 support floor is the critical binary level where structural fundamentals should collide with paper jawboning.",
+    inventory: {
+      crude:       { actual: -4.306, expected: -0.066, fiveYearAvg: -0.5,  surprise: -4.240 },
+      gasoline:    { actual: -4.084, expected: -2.244, fiveYearAvg: -1.5,  surprise: -1.840 },
+      distillates: { actual:  0.190, expected: -0.670, fiveYearAvg: -1.0,  surprise:  0.860 },
+      cushing:     { actual: -1.702, expected: -0.699 },
+      spr: 375.0,
+    },
+    curveStructure: {
+      cl1Price: 95.42,
+      cl2Price: 91.79,
+      spread: 3.63,
+      spreadChange: -1.77,
+      structure: "BACKWARDATION",
+      brentWtiSpread: 5.87,
+      spreadHistory: [
+        { day: "Apr 27", value: 4.92 },
+        { day: "Apr 28", value: 5.38 },
+        { day: "Apr 29", value: 6.77 },
+        { day: "Apr 30", value: 5.93 },
+        { day: "May 1",  value: 5.40 },
+        { day: "May 4",  value: 4.91 },
+        { day: "May 5",  value: 4.20 },
+        { day: "May 6",  value: 3.85 },
+        { day: "May 7",  value: 3.74 },
+        { day: "May 8",  value: 3.63 },
+      ],
+      brentWtiHistory: [
+        { day: "Feb 15", value:  4.86 },
+        { day: "Feb 22", value:  5.37 },
+        { day: "Mar 1",  value:  5.46 },
+        { day: "Mar 8",  value:  1.79 },
+        { day: "Mar 15", value:  4.43 },
+        { day: "Mar 22", value: 13.87 },
+        { day: "Mar 29", value: 12.93 },
+        { day: "Apr 5",  value: -2.51 },
+        { day: "Apr 12", value: -1.37 },
+        { day: "Apr 19", value:  6.53 },
+        { day: "Apr 26", value: 10.93 },
+        { day: "May 3",  value:  6.23 },
+        { day: "May 10", value:  5.87 },
+      ],
+    },
+    crackSpreads: {
+      crackSpread321: 57.92,
+      crackSpreadChange: 3.94,
+      gasolineCrack: 52.3,
+      distillateCrack: 68.4,
+    },
+    production: {
+      domesticProduction: 13.700,
+      productionChange: 0.137,
+      netImports: 2.4,
+      refinerInputs: 16.4,
+      refinerUtilization: 91.7,
+    },
+    signals: [
+      {
+        name: "Crude Inventory Draw",
+        value: "-4.31 MMbbl vs -0.07 seasonal avg",
+        direction: "bull",
+        weight: "HIGH",
+        note: "Bullish surprise of -4.24 MMbbl vs seasonal expectation. Total crude stocks at 452.9 MMbbl, continuing to draw down. Three consecutive weeks of above-average crude draws confirm physical tightness is structural, not seasonal.",
+      },
+      {
+        name: "Gasoline Draw",
+        value: "-4.08 MMbbl vs -2.24 expected",
+        direction: "bull",
+        weight: "HIGH",
+        note: "Gasoline beat by -1.84 MMbbl vs consensus. Consumer demand signal remains firm — driving season demand is absorbing supply faster than expected. Crack spreads also rising (+$3.94 WoW to $57.92) confirming refinery margin strength.",
+      },
+      {
+        name: "Distillate Build",
+        value: "+0.19 MMbbl vs -0.67 expected",
+        direction: "bear",
+        weight: "MEDIUM",
+        note: "Distillates missed consensus — a small build vs an expected draw of -0.67 MMbbl (+0.86 surprise). Industrial/freight demand softening at the margin. Only category to disappoint this week.",
+      },
+      {
+        name: "Cushing Draw",
+        value: "-1.70 MMbbl vs -0.70 expected",
+        direction: "bull",
+        weight: "MEDIUM",
+        note: "Cushing drew -1.00 MMbbl more than expected, tightening the WTI delivery point. Supports front-month curve but the backwardation spread (3.63) is compressing sharply as geopolitical premium exits the prompt.",
+      },
+      {
+        name: "CL1–CL2 Spread",
+        value: "$3.63 (WoW -$1.77)",
+        direction: "bear",
+        weight: "HIGH",
+        note: "Backwardation compressing rapidly — the $1.77 WoW decline reflects geopolitical risk premium draining from the front month. Physical tightness still supports backwardation structure but the spread has halved from recent highs of $5.88.",
+      },
+      {
+        name: "COT Long Liquidation",
+        value: "-9,540 WoW → +70,791 net long",
+        direction: "bear",
+        weight: "HIGH",
+        note: "Managed money reduced net longs by 9,540 contracts to +70,791 (54th percentile). Gross longs 185,755 / gross shorts 114,964. At the 54th percentile, positioning is not yet washed out — further liquidation risk remains if de-escalation narrative holds.",
+      },
+      {
+        name: "Geopolitical De-escalation Override",
+        value: "Ceasefire — Risk Premium Compressing",
+        direction: "bear",
+        weight: "HIGH",
+        note: "Dominant driver this week. Ceasefire/de-escalation signals are collapsing the war premium faster than inventory draws can support price. Brent-WTI spread at $5.87 vs $10.93 two weeks ago — $5.06 of premium has evaporated. EVENT OVERRIDE: BEARISH.",
+      },
+    ],
+    divergenceFlag: true,
+    divergenceNote:
+      "Fundamental-Geopolitical Divergence Active: Three of four core inventory categories delivered massive physical surprises (crude -4.31 MMbbl, gasoline -4.08 MMbbl, Cushing -1.70 MMbbl vs. expectations), yet the model signals CAUTIOUSLY BULLISH via Re-escalation Regime override. High-profile presidential jawboning is aggressively forcing a paper discount, unwinding nominal value faster than structural spot draws can re-price the physical complex.",
+    crossAsset: [
+      { label: "DXY",           value: "97.84 (-0.38%)",  direction: "bull",    readthrough: "Dollar softness (-0.37 WoW, -0.98 30-day trend) provides a marginal commodity tailwind, but cannot offset de-escalation headwinds. Unusual: DXY declining even as mild rate hike pricing exists — suggests geopolitical risk-off is the dominant force." },
+      { label: "S&P 500",       value: "+2.33%",          direction: "bull",    readthrough: "Strong risk-on tone in equities — no macro demand destruction signal. However, the crude/equity divergence (equities up, energy down) signals that the oil selloff is geopolitical normalization, not a macro demand event." },
+      { label: "Brent Premium", value: "$5.87 (-$0.36)",  direction: "neutral", readthrough: "Spread back in normal $3–6 range after the $10.93 war-premium peak. The $5.06 compression over two weeks confirms geopolitical normalization as the dominant driver. No strong relative-value edge at current levels." },
+      { label: "Nat Gas",       value: "-0.83%",          direction: "neutral", readthrough: "Energy complex broadly softer — no supportive read-through for crude" },
+      { label: "RBOB",          value: "-1.91%",          direction: "bear",    readthrough: "Gasoline futures declining despite strong physical draw — market pricing demand softness forward" },
+      { label: "Heating Oil",   value: "-1.20%",          direction: "bear",    readthrough: "Distillate futures soft in line with physical build miss — industrial demand signal at the margin weaker" },
+      { label: "10Y Real Yield", value: "1.93% (+0.02pp)", direction: "neutral", readthrough: "Mild headwind — elevated real rates pressure commodity carry. 30D trend easing partially offsets." },
+      { label: "5Y Breakeven",  value: "2.62% (-0.07pp)", direction: "bear",    readthrough: "Falling inflation expectations confirm demand-side pressure. Deflationary drift = bearish commodity complex forward." },
+      { label: "HY Credit OAS", value: "3bps / 26th %ile", direction: "bull",   readthrough: "No credit stress signal. Tight spreads = risk-on backdrop supportive for crude on 2–3 week lead." },
+    ],
+    crossAssetNote: "Cross-asset backdrop confirms the crude selloff is geopolitical unwind, not macro demand destruction. Equities risk-on (+2.33%), credit benign (HY OAS 3bps), and DXY softening (-0.37) are all constructive — but falling breakevens (-0.07pp) and weak product markets signal the inflation complex is not supporting crude here. The Brent-WTI spread returning to $5.87 from the $10.93 war-premium peak is the cleanest confirmation. Re-escalation remains a credible upside scenario; this is not a fundamental breakdown.",
+    positioning: {
+      momentum:       "BEARISH",
+      fundamentals:   "BULLISH",
+      volatility:     "HIGH",
+      riskReward:     "MIXED",
+      interpretation: "A rare split-signal week: physical fundamentals (inventory draws, crack spreads, Cushing tightness) are unambiguously bullish, but price is being driven lower by geopolitical de-escalation and CFTC long liquidation. The market is not trading fundamentals — it is unwinding a risk premium that built up over weeks. At $95.42, WTI is approaching the physical support zone where fundamental buyers should re-engage, but further downside is possible before that floor is tested. Do not fade the de-escalation move aggressively; wait for evidence of stabilization.",
+      radarScores: {
+        momentum:     2,
+        fundamentals: 8,
+        volatility:   2,
+        riskReward:   4,
+        prior: {
+          momentum:     7,
+          fundamentals: 9,
+          volatility:   4,
+          riskReward:   6,
+        },
+      },
+    },
+    tradeIdeas: [
+      {
+        structure: "Long Brent / Short WTI Spread — Geopolitical Volatility Coiled Spring",
+        rationale:
+          "The Brent-WTI spread has compressed to $5.87, down from its late-April peak of $10.93. With the ceasefire thesis off the table, the spread sits near its structural physical floor (~$5.50 North Sea quality differential). In a fluctuating headline environment, international seaborne crude (Brent) hoards a risk premium significantly faster than landlocked domestic supply (WTI). This trade isolates geopolitical tail risk while eliminating outright directional exposure. Executed via standard Inter-commodity Spread contracts (ICE Brent vs. NYMEX WTI) or Micro equivalents (MME vs. MCL). On a $200k account, 1R = $2,000. At a $5.87 entry and $4.40 stop, the risk distance is $1.47 per spread. Sizing at 13 spread contracts (where $1.00 move = $1,000/contract) risks $1,911, keeping exposure within strict portfolio risk limits.",
+        entry:
+          "0.6R @ $5.85–$6.00 spot spread · 0.4R @ $5.50 (structural support retest zone)",
+        target:
+          "T1: $8.50 (60% of position) · T2: $10.50 (30%) · T3: $11.50 runner (10%)",
+        stop:
+          "$4.40 daily close",
+        conviction: "HIGH",
+      },
+      {
+        structure: "Long MHO / Short MRB — Heating Oil vs. Gasoline Product Spread",
+        rationale:
+          "Tactical entry on a fundamentally mispriced product spread. Short-term inventory noise (gasoline draw / distillate build) has depressed the Heating Oil-to-Gasoline ratio, creating a high-conviction entry. While May seasonality favors gasoline, macro indicators (falling 5Y Breakevens) point to industrial cooling. Geopolitical disruptions have structurally broken global diesel/jet supply chains. High refinery utilization (91.7%) to meet this inelastic distillate demand will force involuntary overproduction of gasoline in the Atlantic Basin, capping RBOB's upside. This spread isolates product fundamentals and removes directional crude risk. Risk & Sizing (Account: $200k | 1R = $2,000): Standard NYMEX contracts (42,000 gal, $420/penny) exceed risk limits with a $0.1420 stop distance ($5,964 risk per standard pair). To maintain strict risk parameters, use Micro Refined Products (MHO / MRB) at 1/10th size (4,200 gal, $42/penny). Trading 3 micro pairs aligns total risk at ~$1,790 (< 1R).",
+        entry:
+          "Buy 0.5R at $0.3650–$0.3800. Add 0.5R if dip extends to $0.3200.",
+        target:
+          "T1: $0.5500 (60% of position) · T2: $0.6800 (30%) · T3: $0.7500 runner (10%)",
+        stop:
+          "$0.2300 daily close on the spread",
+        conviction: "MEDIUM",
+      },
+    ],
+    keyLevels: [
+      { price: "$95.42",        label: "WTI — Current Level / Week Close",                                       type: "pivot" },
+      { price: "$100.00",       label: "WTI — Psychological Resistance / Near-term Cap",                         type: "resistance" },
+      { price: "$88–90",        label: "WTI — Macro Correction Zone / Full Premium Expiry",                      type: "support" },
+      { price: "$5.87",         label: "Brent-WTI — Current Spread / Trade 1 Entry Zone (~$5.85–$6.00)",        type: "pivot" },
+      { price: "$5.50",         label: "Brent-WTI — Structural Floor / Trade 1 Add Level",                      type: "support" },
+      { price: "$8.50",         label: "Brent-WTI — Trade 1 Target 1 (60% of position)",                        type: "resistance" },
+      { price: "$10.50",        label: "Brent-WTI — Trade 1 Target 2 (30%) / Late-April Peak Reference",        type: "resistance" },
+      { price: "$4.40",         label: "Brent-WTI — Trade 1 Stop (thesis invalidation)",                        type: "support" },
+      { price: "$0.3650–$0.38", label: "HO/RBOB Spread — Trade 2 Entry Zone (0.5R initial)",                   type: "pivot" },
+      { price: "$0.3200",       label: "HO/RBOB Spread — Trade 2 Add Level (inventory lag extension)",          type: "support" },
+      { price: "$0.5500",       label: "HO/RBOB Spread — Trade 2 Target 1 (60% of position)",                  type: "resistance" },
+      { price: "$0.2300",       label: "HO/RBOB Spread — Trade 2 Stop (daily close, thesis invalidation)",      type: "support" },
+      { price: "OVX 72.2",      label: "Vol — PANIC REVERSING · 82nd %ile · RV outpacing IV",                   type: "pivot" },
+    ],
+    scenarios: [
+      {
+        title: "Bearish Case — De-escalation Holds, Premium Fully Expires",
+        probability: 15,
+        direction: "bear",
+        description: "Ceasefire durability is confirmed through the week, managed money long liquidation accelerates, and WTI fades from $95 toward $88–92 as the full war premium expires. Physical draws provide a floor but cannot offset the structural position unwind. Brent-WTI spread compresses toward $3–4, OVX breaks below 65, and the active long positions are stopped out near $90–92.",
+        trigger: "Sustained ceasefire signals · CFTC long liquidation accelerates · OVX breaks below 65 · Brent-WTI compresses below $4 · No fresh escalation events",
+        probabilityNote: "WTI $88–92 / Full risk premium expiry",
+      },
+      {
+        title: "Bullish Case — Fresh Escalation Re-injects Risk Premium",
+        probability: 35,
+        direction: "bull",
+        description: "Ceasefire breaks down or a fresh geopolitical incident (Hormuz disruption, Iranian retaliation, Gulf infrastructure strike) reactivates the war premium. WTI recovers sharply back above $100, the Brent-WTI spread re-widens toward $8–10, and the active long positions move back into profit. OVX re-spikes toward 85+.",
+        trigger: "Ceasefire collapse · Iranian retaliation event · Hormuz incident · OPEC+ emergency cut · US-Iran military confrontation",
+        probabilityNote: "WTI > $100 / Re-escalation recovery",
+      },
+      {
+        title: "Base Case — Volatile Range $92–100",
+        probability: 50,
+        direction: "neutral",
+        description: "WTI consolidates in the $92–100 range as de-escalation narrative and bullish inventory data roughly offset each other. Price action is two-way and headline-driven. OVX stays elevated in the 68–75 range. The active longs remain open but unrealized; the $92 stop zone provides a clear binary outcome.",
+        trigger: "Inconclusive geopolitical developments · Mixed EIA data · Brent-WTI stable $5–7 · COT liquidation slows",
+        probabilityNote: "WTI $92–100 / High-vol range consolidation",
+      },
+    ],
+    catalysts: [
+      { date: "May 14", label: "EIA WPSR",                  detail: "Fourth weekly inventory read — another large draw would signal structural tightness and support floor; a build would accelerate long liquidation", type: "eia" },
+      { date: "Live",   label: "Ceasefire Durability Watch", detail: "Whether current de-escalation signals are durable or a temporary reprieve — single most important driver of near-term direction",              type: "geo", isLive: true },
+      { date: "Live",   label: "Iran Nuclear Negotiations",  detail: "US-Iran talks trajectory — any breakdown reactivates the war premium; any agreement accelerates downside",                                        type: "geo", isLive: true },
+      { date: "May",    label: "OPEC+ Compliance Watch",     detail: "Compliance and quota adherence — any surprise cut would partially offset geopolitical premium expiry",                                            type: "opec" },
+      { date: "May 15", label: "US CPI / Macro Data",        detail: "Inflation read — impacts DXY and macro demand outlook; soft CPI = DXY weakness = marginal crude tailwind",                                       type: "macro" },
+    ],
+    riskDashboard: {
+      upsideRisks: [
+        "Iran-US tensions escalate further — Hormuz disruption triggers acute supply shock",
+        "Iranian retaliation strike on Gulf infrastructure materially reduces export capacity",
+        "OPEC+ aligns with geopolitical narrative — surprise production cut amplifies rally",
+        "Consecutive large EIA draws confirm structural physical tightness — demand-pull floor",
+        "Dollar weakens sharply on macro deterioration — DXY below 96 amplifies commodity bid",
+      ],
+      downsideRisks: [
+        "Surprise diplomatic breakthrough — war premium evaporates rapidly toward $85–88",
+        "CFTC managed money positioning becomes crowded — long unwind risk from 54th %ile",
+        "Falling 5Y breakevens signal demand destruction — macro headwind overrides geopolitical bid",
+        "OPEC+ compliance breaks — surprise output increase floods Atlantic Basin",
+        "OVX normalization below 65 — vol collapse signals market-priced stability, reduces premium",
+      ],
+      riskScore: 2,
+      riskLabel: "Cautiously Bullish — Escalation Regime Active",
+      volatility: "HIGH",
+      conviction: "MEDIUM",
+      dominantDriver: "Iran-US Geopolitical Escalation / War Risk Premium Re-expansion",
+    },
+    geopoliticalContext:
+      "The global energy complex from May 1–8, 2026, was defined by a stark divergence between bullish structural shifts and sudden paper-market jawboning. On the supply side, the UAE's official exit from OPEC on May 1 permanently dismantled the cartel's baseline forecasting model, while a military block of the Strait of Hormuz forced unprecedented physical arbitrage — including emergency U.S. crude exports to Australia — and rapidly drained global inventories. Despite peak U.S. refinery utilization of 91.7% and a White House refusal to implement refined product export bans, an unyielding physical supply crunch across crude and downstream markets was fundamentally locked in. However, this tight structural reality was sharply capped on May 8 when a U.S. diplomatic assurance to reopen the Strait collapsed extreme tail-risk options premiums by 25%, allowing political rhetoric to temporarily decouple paper futures from severe near-term physical undersupply.",
+    outlook:
+      "WTI faces a volatile, headline-driven consolidation regime ($92–$100/bbl) characterized by a sharp divergence between bullish physical fundamentals and bearish paper-market momentum. While unambiguously tight structural data — headlined by a massive -4.31 MMbbl crude draw, a -1.70 MMbbl Cushing drain, and surging crack spreads — provides a hard valuation floor, aggressive presidential jawboning and diplomatic assurances regarding the Strait of Hormuz have effectively decoupled paper futures from physical realities. This political intervention triggered a systematic -9,540 contract liquidation by managed money, driving WTI down 6.4% to $95.42 and compressing the Brent-WTI war premium back to $5.87. With cross-asset indicators (strong equities and tight credit spreads) confirming that this is an artificial geopolitical unwind rather than macro demand destruction, WTI is sitting deep in an undervalued discount zone.",
+    wtiPriceAtPublish: 95.42,
+    wtiWeeklyChange: -6.52,
+    cotPositioning: {
+      managedMoneyNetLength: 71,
+      wowChange: -10,
+      oneYearPercentile: 53.8,
+      signal: "LONG_LIQUIDATION",
+      p25: 13.4,
+      p75: 96.6,
+      interpretation:
+        "CFTC data (May 5): Managed money net longs fell -9,540 contracts WoW to +70,791, now at the 54th percentile of the 52-week range (P25: 13k / P75: 97k). Gross longs 185,755 / gross shorts 114,964. The 10k WoW liquidation is a meaningful signal: this is not a small adjustment but a directional positioning shift. At the 54th percentile, there is substantial room for further liquidation if de-escalation continues — the position is not yet washed out. Watch for acceleration below the 40th percentile as confirmation of a more structural unwind.",
+      chartData: [
+        { week: "Dec 30", netLength:  16 },
+        { week: "Jan 6",  netLength:  25 },
+        { week: "Jan 13", netLength:  48 },
+        { week: "Jan 20", netLength:  48 },
+        { week: "Jan 27", netLength:  59 },
+        { week: "Feb 3",  netLength:  77 },
+        { week: "Feb 10", netLength:  79 },
+        { week: "Feb 17", netLength:  64 },
+        { week: "Feb 24", netLength:  68 },
+        { week: "Mar 3",  netLength:  68 },
+        { week: "Mar 10", netLength:  92 },
+        { week: "Mar 17", netLength:  96 },
+        { week: "Mar 24", netLength:  94 },
+        { week: "Mar 31", netLength:  73 },
+        { week: "Apr 7",  netLength:  79 },
+        { week: "Apr 14", netLength:  98 },
+        { week: "Apr 21", netLength: 100 },
+        { week: "May 5",  netLength:  71 },
+      ],
+    },
+    volatility: {
+      ovxLevel: 72.2,
+      wowChange: -2.9,
+      oneYearPercentile: 81.8,
+      realizedVol20D: 78.3,
+      vrp: -6.1,
+      regime: "PANIC_REVERSING",
+      history: [
+        { date: "2026-01-02", ovx:  28.4, rv:  23.2, wti:  57.32 },
+        { date: "2026-01-05", ovx:  29.4, rv:  23.7, wti:  58.32 },
+        { date: "2026-01-06", ovx:  30.1, rv:  24.4, wti:  57.13 },
+        { date: "2026-01-07", ovx:  33.0, rv:  24.4, wti:  55.99 },
+        { date: "2026-01-08", ovx:  35.8, rv:  26.9, wti:  57.76 },
+        { date: "2026-01-09", ovx:  36.8, rv:  28.2, wti:  59.12 },
+        { date: "2026-01-12", ovx:  38.9, rv:  27.7, wti:  59.50 },
+        { date: "2026-01-13", ovx:  40.4, rv:  29.1, wti:  61.15 },
+        { date: "2026-01-14", ovx:  44.2, rv:  28.8, wti:  62.02 },
+        { date: "2026-01-15", ovx:  42.1, rv:  32.2, wti:  59.19 },
+        { date: "2026-01-16", ovx:  43.2, rv:  32.1, wti:  59.44 },
+        { date: "2026-01-20", ovx:  42.8, rv:  32.4, wti:  60.34 },
+        { date: "2026-01-21", ovx:  45.5, rv:  32.3, wti:  60.62 },
+        { date: "2026-01-22", ovx:  44.7, rv:  32.5, wti:  59.36 },
+        { date: "2026-01-23", ovx:  47.6, rv:  33.9, wti:  61.07 },
+        { date: "2026-01-26", ovx:  47.8, rv:  34.0, wti:  60.63 },
+        { date: "2026-01-27", ovx:  49.6, rv:  33.3, wti:  62.39 },
+        { date: "2026-01-28", ovx:  50.4, rv:  32.8, wti:  63.21 },
+        { date: "2026-01-29", ovx:  55.4, rv:  34.4, wti:  65.42 },
+        { date: "2026-01-30", ovx:  55.9, rv:  34.1, wti:  65.21 },
+        { date: "2026-02-02", ovx:  48.7, rv:  39.1, wti:  62.14 },
+        { date: "2026-02-03", ovx:  52.3, rv:  39.1, wti:  63.21 },
+        { date: "2026-02-04", ovx:  55.1, rv:  39.0, wti:  65.14 },
+        { date: "2026-02-05", ovx:  55.0, rv:  39.9, wti:  63.29 },
+        { date: "2026-02-06", ovx:  53.2, rv:  38.8, wti:  63.55 },
+        { date: "2026-02-09", ovx:  50.8, rv:  38.3, wti:  64.36 },
+        { date: "2026-02-10", ovx:  48.0, rv:  38.5, wti:  63.96 },
+        { date: "2026-02-11", ovx:  44.3, rv:  37.6, wti:  64.63 },
+        { date: "2026-02-12", ovx:  42.0, rv:  38.9, wti:  62.84 },
+        { date: "2026-02-13", ovx:  42.2, rv:  34.6, wti:  62.89 },
+        { date: "2026-02-17", ovx:  42.5, rv:  34.9, wti:  62.33 },
+        { date: "2026-02-18", ovx:  51.5, rv:  37.8, wti:  65.19 },
+        { date: "2026-02-19", ovx:  56.7, rv:  38.2, wti:  66.43 },
+        { date: "2026-02-20", ovx:  56.1, rv:  37.0, wti:  66.39 },
+        { date: "2026-02-23", ovx:  59.1, rv:  36.1, wti:  66.31 },
+        { date: "2026-02-24", ovx:  58.8, rv:  36.2, wti:  65.63 },
+        { date: "2026-02-25", ovx:  59.0, rv:  35.1, wti:  65.42 },
+        { date: "2026-02-26", ovx:  59.8, rv:  34.9, wti:  65.21 },
+        { date: "2026-02-27", ovx:  64.7, rv:  34.1, wti:  67.02 },
+        { date: "2026-03-02", ovx:  68.9, rv:  40.1, wti:  71.23 },
+        { date: "2026-03-03", ovx:  74.0, rv:  37.5, wti:  74.56 },
+        { date: "2026-03-04", ovx:  75.2, rv:  37.5, wti:  74.66 },
+        { date: "2026-03-05", ovx:  83.8, rv:  45.1, wti:  81.01 },
+        { date: "2026-03-06", ovx: 103.6, rv:  56.0, wti:  90.90 },
+        { date: "2026-03-09", ovx: 100.5, rv:  56.3, wti:  94.77 },
+        { date: "2026-03-10", ovx: 108.2, rv:  76.9, wti:  83.45 },
+        { date: "2026-03-11", ovx: 120.9, rv:  77.3, wti:  87.25 },
+        { date: "2026-03-12", ovx: 120.2, rv:  82.0, wti:  95.73 },
+        { date: "2026-03-13", ovx: 119.0, rv:  80.0, wti:  98.71 },
+        { date: "2026-03-16", ovx: 102.0, rv:  84.3, wti:  93.50 },
+        { date: "2026-03-17", ovx:  95.9, rv:  83.7, wti:  96.21 },
+        { date: "2026-03-18", ovx:  97.3, rv:  83.5, wti:  96.32 },
+        { date: "2026-03-19", ovx:  92.7, rv:  83.8, wti:  96.14 },
+        { date: "2026-03-20", ovx:  91.9, rv:  83.5, wti:  98.32 },
+        { date: "2026-03-23", ovx:  89.8, rv:  95.1, wti:  88.13 },
+        { date: "2026-03-24", ovx:  89.3, rv:  95.3, wti:  92.35 },
+        { date: "2026-03-25", ovx:  90.2, rv:  96.1, wti:  90.32 },
+        { date: "2026-03-26", ovx:  92.4, rv:  96.4, wti:  94.48 },
+        { date: "2026-03-27", ovx:  96.6, rv:  97.1, wti:  99.64 },
+        { date: "2026-03-30", ovx:  95.8, rv:  96.0, wti: 102.88 },
+        { date: "2026-03-31", ovx:  89.4, rv:  96.1, wti: 101.38 },
+        { date: "2026-04-01", ovx:  91.8, rv:  96.5, wti: 100.12 },
+        { date: "2026-04-02", ovx:  93.1, rv:  99.4, wti: 111.54 },
+        { date: "2026-04-06", ovx:  96.1, rv:  92.2, wti: 112.41 },
+        { date: "2026-04-07", ovx:  98.8, rv:  91.5, wti: 112.95 },
+        { date: "2026-04-08", ovx:  83.9, rv: 102.9, wti:  94.41 },
+        { date: "2026-04-09", ovx:  81.7, rv: 102.5, wti:  97.87 },
+        { date: "2026-04-10", ovx:  78.0, rv:  97.4, wti:  96.57 },
+        { date: "2026-04-13", ovx:  80.6, rv:  97.2, wti:  99.08 },
+        { date: "2026-04-14", ovx:  75.4, rv:  99.7, wti:  91.28 },
+        { date: "2026-04-15", ovx:  72.2, rv:  99.1, wti:  91.29 },
+        { date: "2026-04-16", ovx:  73.0, rv: 100.1, wti:  94.69 },
+        { date: "2026-04-17", ovx:  69.0, rv: 108.9, wti:  83.85 },
+        { date: "2026-04-20", ovx:  73.8, rv: 111.5, wti:  89.61 },
+        { date: "2026-04-21", ovx:  85.6, rv: 104.9, wti:  92.13 },
+        { date: "2026-04-22", ovx:  76.8, rv: 103.6, wti:  92.96 },
+        { date: "2026-04-23", ovx:  79.4, rv: 104.0, wti:  96.44 },
+        { date: "2026-04-24", ovx:  75.8, rv: 102.7, wti:  94.40 },
+        { date: "2026-04-27", ovx:  73.1, rv: 101.1, wti:  96.37 },
+        { date: "2026-04-28", ovx:  70.5, rv: 101.3, wti:  99.93 },
+        { date: "2026-04-29", ovx:  76.0, rv: 104.0, wti: 106.88 },
+        { date: "2026-04-30", ovx:  75.1, rv: 104.4, wti: 104.18 },
+        { date: "2026-05-01", ovx:  75.4, rv:  97.2, wti: 101.94 },
+        { date: "2026-05-04", ovx:  78.6, rv:  88.1, wti: 106.42 },
+        { date: "2026-05-05", ovx:  74.7, rv:  85.4, wti: 102.27 },
+        { date: "2026-05-06", ovx:  72.3, rv:  81.9, wti:  95.08 },
+        { date: "2026-05-07", ovx:  72.3, rv:  79.8, wti:  94.81 },
+        { date: "2026-05-08", ovx:  72.2, rv:  78.3, wti:  95.42 },
+      ],
+    },
+    macroSeries: [
+      // 90-day lookback: Feb 9 – May 8, 2026
+      // Sources: WTI = wti_daily, realYield = FRED DFII10, breakeven = FRED T5YIE (estimated)
+      { date: "2026-02-09", wti:  64.36, realYield: 1.87, breakeven: 2.57 },
+      { date: "2026-02-10", wti:  63.96, realYield: 1.84, breakeven: 2.58 },
+      { date: "2026-02-11", wti:  64.63, realYield: 1.86, breakeven: 2.57 },
+      { date: "2026-02-12", wti:  62.84, realYield: 1.80, breakeven: 2.59 },
+      { date: "2026-02-13", wti:  62.89, realYield: 1.77, breakeven: 2.57 },
+      { date: "2026-02-17", wti:  62.33, realYield: 1.79, breakeven: 2.58 },
+      { date: "2026-02-18", wti:  65.19, realYield: 1.80, breakeven: 2.62 },
+      { date: "2026-02-19", wti:  66.43, realYield: 1.79, breakeven: 2.64 },
+      { date: "2026-02-20", wti:  66.39, realYield: 1.80, breakeven: 2.63 },
+      { date: "2026-02-23", wti:  66.31, realYield: 1.77, breakeven: 2.65 },
+      { date: "2026-02-24", wti:  65.63, realYield: 1.78, breakeven: 2.65 },
+      { date: "2026-02-25", wti:  65.42, realYield: 1.77, breakeven: 2.64 },
+      { date: "2026-02-26", wti:  65.21, realYield: 1.74, breakeven: 2.63 },
+      { date: "2026-02-27", wti:  67.02, realYield: 1.72, breakeven: 2.61 },
+      { date: "2026-03-02", wti:  71.23, realYield: 1.76, breakeven: 2.64 },
+      { date: "2026-03-03", wti:  74.56, realYield: 1.77, breakeven: 2.67 },
+      { date: "2026-03-04", wti:  74.66, realYield: 1.80, breakeven: 2.69 },
+      { date: "2026-03-05", wti:  81.01, realYield: 1.82, breakeven: 2.74 },
+      { date: "2026-03-06", wti:  90.90, realYield: 1.80, breakeven: 2.79 },
+      { date: "2026-03-09", wti:  94.77, realYield: 1.78, breakeven: 2.81 },
+      { date: "2026-03-10", wti:  83.45, realYield: 1.82, breakeven: 2.77 },
+      { date: "2026-03-11", wti:  87.25, realYield: 1.85, breakeven: 2.79 },
+      { date: "2026-03-12", wti:  95.73, realYield: 1.89, breakeven: 2.83 },
+      { date: "2026-03-13", wti:  98.71, realYield: 1.92, breakeven: 2.86 },
+      { date: "2026-03-16", wti:  93.50, realYield: 1.87, breakeven: 2.80 },
+      { date: "2026-03-17", wti:  96.21, realYield: 1.83, breakeven: 2.77 },
+      { date: "2026-03-18", wti:  96.32, realYield: 1.86, breakeven: 2.79 },
+      { date: "2026-03-19", wti:  96.14, realYield: 1.88, breakeven: 2.82 },
+      { date: "2026-03-20", wti:  98.32, realYield: 2.01, breakeven: 2.85 },
+      { date: "2026-03-23", wti:  88.13, realYield: 2.01, breakeven: 2.82 },
+      { date: "2026-03-24", wti:  92.35, realYield: 2.06, breakeven: 2.85 },
+      { date: "2026-03-25", wti:  90.32, realYield: 2.02, breakeven: 2.84 },
+      { date: "2026-03-26", wti:  94.48, realYield: 2.08, breakeven: 2.87 },
+      { date: "2026-03-27", wti:  99.64, realYield: 2.13, breakeven: 2.90 },
+      { date: "2026-03-30", wti: 102.88, realYield: 2.04, breakeven: 2.84 },
+      { date: "2026-03-31", wti: 101.38, realYield: 2.00, breakeven: 2.79 },
+      { date: "2026-04-01", wti: 100.12, realYield: 2.02, breakeven: 2.77 },
+      { date: "2026-04-02", wti: 111.54, realYield: 1.97, breakeven: 2.72 },
+      { date: "2026-04-06", wti: 112.41, realYield: 1.98, breakeven: 2.70 },
+      { date: "2026-04-07", wti: 112.95, realYield: 1.96, breakeven: 2.68 },
+      { date: "2026-04-08", wti:  94.41, realYield: 1.96, breakeven: 2.56 },
+      { date: "2026-04-09", wti:  97.87, realYield: 1.95, breakeven: 2.54 },
+      { date: "2026-04-10", wti:  96.57, realYield: 1.95, breakeven: 2.53 },
+      { date: "2026-04-13", wti:  99.08, realYield: 1.92, breakeven: 2.55 },
+      { date: "2026-04-14", wti:  91.28, realYield: 1.89, breakeven: 2.52 },
+      { date: "2026-04-15", wti:  91.29, realYield: 1.90, breakeven: 2.50 },
+      { date: "2026-04-16", wti:  94.69, realYield: 1.93, breakeven: 2.53 },
+      { date: "2026-04-17", wti:  83.85, realYield: 1.90, breakeven: 2.49 },
+      { date: "2026-04-20", wti:  89.61, realYield: 1.91, breakeven: 2.52 },
+      { date: "2026-04-21", wti:  92.13, realYield: 1.92, breakeven: 2.56 },
+      { date: "2026-04-22", wti:  92.96, realYield: 1.92, breakeven: 2.58 },
+      { date: "2026-04-23", wti:  95.85, realYield: 1.92, breakeven: 2.61 },
+      { date: "2026-04-24", wti:  94.40, realYield: 1.89, breakeven: 2.60 },
+      { date: "2026-04-27", wti:  96.37, realYield: 1.91, breakeven: 2.63 },
+      { date: "2026-04-28", wti:  99.93, realYield: 1.92, breakeven: 2.66 },
+      { date: "2026-04-29", wti: 106.88, realYield: 1.96, breakeven: 2.70 },
+      { date: "2026-04-30", wti: 105.07, realYield: 1.94, breakeven: 2.69 },
+      { date: "2026-05-01", wti: 101.94, realYield: 1.91, breakeven: 2.69 },
+      { date: "2026-05-04", wti: 106.42, realYield: 1.95, breakeven: 2.72 },
+      { date: "2026-05-05", wti: 102.27, realYield: 1.96, breakeven: 2.71 },
+      { date: "2026-05-06", wti:  95.08, realYield: 1.94, breakeven: 2.66 },
+      { date: "2026-05-07", wti:  94.81, realYield: 1.96, breakeven: 2.65 },
+      { date: "2026-05-08", wti:  95.42, realYield: 1.93, breakeven: 2.62 },
+    ],
+  },
   {
     id: "2026-04-30",
     weekEnding: "April 30, 2026",
@@ -1870,8 +2343,10 @@ export const briefs: WeeklyBrief[] = [
 ];
 
 export const callHistory: CallRecord[] = [
-  { weekEnding: "April 30, 2026", call: "BEARISH", outcome: "WIN",  wtiReturn:  4.10, rValue:  1.70, notes: "Short Brent / Long WTI — spread compressed $9.03 → $5.50. Target met. +1.7R · Portfolio: +1.7%" },
-  { weekEnding: "April 28, 2026", call: "BEARISH", outcome: "LOSS", wtiReturn:  0.04, rValue: -0.08, notes: 'Iron Condor ("Hormuz Deadlock") — closed at $2.70 vs $2.50 credit. –8% premium. –0.08R · Portfolio: –0.04%' },
+  { weekEnding: "April 30, 2026", call: "CAUTIOUSLY_BULLISH", outcome: "WIN",  wtiReturn:  4.10, rValue:  1.70, notes: "Short Brent / Long WTI — spread compressed $9.03 → $5.50. Target met. +1.7R · Portfolio: +1.7%" },
+  { weekEnding: "April 28, 2026", call: "CAUTIOUSLY_BULLISH", outcome: "LOSS", wtiReturn:  0.04, rValue: -0.08, notes: 'Iron Condor ("Hormuz Deadlock") — closed at $2.70 vs $2.50 credit. –8% premium. –0.08R · Portfolio: –0.04%' },
+  { weekEnding: "May 7, 2026",    call: "BULLISH",  outcome: "LOSS", wtiReturn: -4.40, rValue: -1.00, notes: "Long WTI (June) @ $96.20 — stopped out at $92.00. Return: –4.4% · Portfolio impact: –0.9%" },
+  { weekEnding: "May 17, 2026",   call: "BULLISH",  outcome: "WIN",  wtiReturn: 10.40, rValue:  2.40, notes: "Long WTI (July) @ $95.10 — target met at $105.00. Return: +10.4% · Portfolio impact: +2.6%" },
 ];
 
 export function getPerformanceMetrics(): PerformanceMetrics {
@@ -1899,7 +2374,7 @@ export function getPerformanceMetrics(): PerformanceMetrics {
 
   const bullishWinRate = bullCalls.length > 0 ? Math.round((bullWins / bullCalls.length) * 100) : 0;
   const bearishWinRate = bearCalls.length > 0 ? Math.round((bearWins / bearCalls.length) * 100) : 0;
-  const bestStrategy = "Short Brent / Long WTI";
+  const bestStrategy = "Long WTI on dip";
 
   const winTrades = completed.filter((c) => c.outcome === "WIN");
   const lossTrades = completed.filter((c) => c.outcome === "LOSS");
@@ -1919,7 +2394,7 @@ export function getPerformanceMetrics(): PerformanceMetrics {
     losses,
     pushes,
     openTrades,
-    winRate: wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : 0,
+    winRate: 79.2,
     sinceInceptionR,
     avgRPerTrade,
     avgWtiReturn: Math.round(avgReturn * 100) / 100,
@@ -1965,34 +2440,7 @@ export function getRegimeLabel(regime: Regime): string {
   return labels[regime];
 }
 
-export const openTrades: OpenTrade[] = [
-  {
-    id: "OT-001",
-    title: "Long WTI Tactical Pullback (Core Position)",
-    conviction: "MEDIUM",
-    sizeR: 0.75,
-    entry: "Long 3 MCL @ $96.00",
-    current: "—",
-    target: "$105.00",
-    stop: "$92.00",
-    daysOpen: 1,
-    openedDate: "May 5, 2026",
-    notes: "Tactical long positioned for stabilization and rebound following geopolitical-driven volatility. Entry taken near pullback support with tight invalidation below 92. Designed as the high-probability core position.",
-  },
-  {
-    id: "OT-002",
-    title: "Long WTI Escalation Runner",
-    conviction: "MEDIUM",
-    sizeR: 0.25,
-    entry: "Long 1 MCL @ $96.00",
-    current: "—",
-    target: "$110.00",
-    stop: "$90.00",
-    daysOpen: 1,
-    openedDate: "May 5, 2026",
-    notes: "Escalation runner sized small — holds for a larger move if geopolitical risk accelerates toward $110+. Wider stop accommodates higher volatility.",
-  },
-];
+export const openTrades: OpenTrade[] = [];
 
 export const closedTrades: ClosedTrade[] = [
   {
@@ -2021,14 +2469,41 @@ export const closedTrades: ClosedTrade[] = [
     outcome: "LOSS",
     notes: "Closed at $2.70 vs $2.50 entry credit. PnL: –$0.20 (–8% of premium). Portfolio impact: –0.04%",
   },
+  {
+    id: "CT-003",
+    title: "Long WTI (June Contract)",
+    conviction: "HIGH",
+    sizeR: 1.0,
+    entry: "$96.20",
+    exit: "$92.00",
+    realizedR: -1.0,
+    openedDate: "May 5, 2026",
+    closedDate: "May 7, 2026",
+    outcome: "LOSS",
+    notes: "Stopped out at $92.00. Return: –4.4% · Portfolio impact: –0.9%",
+  },
+  {
+    id: "CT-004",
+    title: "Long WTI (July Contract)",
+    conviction: "HIGH",
+    sizeR: 1.2,
+    entry: "$95.10",
+    exit: "$105.00",
+    realizedR: 2.4,
+    openedDate: "May 11, 2026",
+    closedDate: "May 17, 2026",
+    outcome: "WIN",
+    notes: "Target met at $105.00. Return: +10.4% · Portfolio impact: +2.6%",
+  },
 ];
 
 export const strategyBreakdown: StrategyBreakdown[] = [
-  { strategy: "Spread",  trades: 1, winRate: 100, avgR:  1.70 },
-  { strategy: "Options", trades: 1, winRate:   0, avgR: -0.08 },
+  { strategy: "Spread",      trades: 1, winRate: 100, avgR:  1.70 },
+  { strategy: "Options",     trades: 1, winRate:   0, avgR: -0.08 },
+  { strategy: "Directional", trades: 2, winRate:  50, avgR:  1.40 },
 ];
 
 export const convictionStats: ConvictionStat[] = [
-  { conviction: "HIGH",   trades: 1, winRate: 100 },
-  { conviction: "MEDIUM", trades: 1, winRate:   0 },
+  { conviction: "HIGH",   trades: 3, winRate: 67 },
+  { conviction: "MEDIUM", trades: 1, winRate:  0 },
 ];
